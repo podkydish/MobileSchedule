@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.example.kalonkotlin.ui.home.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/navigation_student"
+        android:name="com.example.kalonkotlin.ui.student.StudentFragment"
+        android:label="@string/title_student"
+        tools:layout="@layout/fragment_student" />
+
+    <fragment
+        android:id="@+id/navigation_professor"
+        android:name="com.example.kalonkotlin.ui.professor.ProfessorFragment"
+        android:label="@string/title_professor"
+        tools:layout="@layout/fragment_professor" />
+    <fragment
+        android:id="@+id/navigation_info"
+        android:name="com.example.kalonkotlin.ui.info.InfoFragment"
+        android:label="@string/title_info"
+        tools:layout="@layout/fragment_info" />
+</navigation>

@@ -1,0 +1,43 @@
+<resources>
+    <string name="app_name">МАИ</string>
+    <string name="title_home">Главная</string>
+    <string name="title_student">Студент</string>
+    <string name="title_professor">Преподаватель</string>
+    <string name="title_info">Инфо</string>
+    <string name="stud_search_btn">Поиск</string>
+    <string name="fac_name">Укажите факультет</string>
+    <string name="course_name">Укажите курс</string>
+    <string name="group_name">Выберите группу</string>
+    <string name="choose_name">Выбрать</string>
+    <string name="back_name">Назад</string>
+    <string name="guk_map">GukMap</string>
+    <string name="orsh_map">orsh_map</string>
+    <string name="exit_btn">покинуть помойку</string>
+    <string name="onWeek">на неделю</string>
+    <string name="back">Назад</string>
+    <string name="next">Дальше</string>
+    <string name="now">сейчас</string>
+    <string name="authors">Авторы</string>
+    <string-array name="course_number">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
+    <string-array name="faculty_number">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
+</resources>

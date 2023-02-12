@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.example.kalonkotlin.ui.student.StudentFragment"
+        android:id="@+id/next_button">
+
+    <ImageView
+            android:src="@drawable/next_button"
+            android:layout_width="104dp"
+            android:layout_height="60dp"
+            android:id="@+id/next_day_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scheduleText_prof"
+            android:visibility="invisible"
+            android:layout_marginStart="208dp" />
+
+    <ImageView
+            android:src="@drawable/onweek_button"
+            android:layout_width="104dp"
+            android:layout_height="60dp"
+            android:id="@+id/on_week_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scheduleText_prof"
+            android:visibility="invisible"
+            android:layout_marginStart="312dp" />
+
+    <ImageView
+            android:src="@drawable/now_button"
+            android:layout_width="104dp"
+            android:layout_height="60dp"
+            android:id="@+id/now_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scheduleText_prof"
+            android:visibility="invisible"
+            android:layout_marginStart="104dp" />
+
+    <TextView
+            android:id="@+id/text_student"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.173" />
+
+    <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/group_name_status"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/scheduleText_prof"
+            app:layout_constraintVertical_bias="0.115"
+            android:textStyle="bold"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toStartOf="@+id/backTextBtn"
+            app:layout_constraintHorizontal_bias="0.50" />
+
+    <TextView
+            android:text="@string/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/backTextBtn"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/scheduleText_prof"
+            app:layout_constraintStart_toEndOf="@+id/group_name_status"
+            android:clickable="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:minHeight="48dp" />
+
+    <TextView
+            android:id="@+id/courseText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="60dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/course_name"
+            app:layout_constraintBottom_toTopOf="@+id/courseNumber"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+            android:id="@+id/facultyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/fac_name"
+            app:layout_constraintBottom_toTopOf="@+id/facultyNumber"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.746"
+            app:layout_constraintStart_toEndOf="@+id/courseText" />
+
+    <TextView
+            android:id="@+id/groupText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/group_name"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/group"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_student"
+            app:layout_constraintVertical_bias="0.772" />
+
+    <TextView
+            android:layout_width="0dp"
+            android:layout_height="583dp"
+            android:id="@+id/scheduleText_prof"
+            android:visibility="invisible"
+            android:scrollbars="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintBottom_toTopOf="@+id/next_day_button" />
+
+    <Spinner
+            android:id="@+id/courseNumber"
+            android:layout_width="122dp"
+            android:layout_height="48dp"
+            android:entries="@array/course_number"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_student"
+            tools:ignore="DuplicateSpeakableTextCheck"
+            app:layout_constraintEnd_toStartOf="@+id/facultyNumber"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="40dp"
+            app:layout_constraintHorizontal_bias="0.0" />
+
+    <Spinner
+            android:id="@+id/facultyNumber"
+            android:layout_width="122dp"
+            android:layout_height="48dp"
+            android:entries="@array/faculty_number"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_student"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="40dp" />
+
+    <Spinner
+            android:id="@+id/group"
+            android:layout_width="350dp"
+            android:layout_height="22dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/courseNumber"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_student"
+            app:layout_constraintVertical_bias="0.498" />
+
+    <Button
+            android:id="@+id/chooseBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:text="@string/choose_name"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.738"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_student"
+            app:layout_constraintVertical_bias="0.67" />
+
+    <Button
+            android:id="@+id/stud_search_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:text="@string/stud_search_btn"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_student"
+            app:layout_constraintVertical_bias="0.67"
+            tools:ignore="DuplicateClickableBoundsCheck" />
+
+    <ImageView
+            android:src="@drawable/back_button"
+            android:layout_width="104dp"
+            android:layout_height="60dp"
+            android:id="@+id/back_prof"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scheduleText_prof"
+            android:visibility="invisible" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
