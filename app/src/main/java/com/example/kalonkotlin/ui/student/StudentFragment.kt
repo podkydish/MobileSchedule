@@ -46,10 +46,10 @@ class StudentFragment : Fragment(), View.OnClickListener {
     private lateinit var groupText: TextView
     private lateinit var searchBtn: Button
     private lateinit var backButton: TextView
-    private lateinit var nextButton: AppCompatImageView
-    private lateinit var prevButton: AppCompatImageView
-    private lateinit var onWeekBtn: AppCompatImageView
-    private lateinit var nowBtn: AppCompatImageView
+    private lateinit var nextButton: Button
+    private lateinit var prevButton: Button
+    private lateinit var onWeekBtn: Button
+    private lateinit var nowBtn: Button
     private lateinit var scheduleText: TextView
     private lateinit var statusText: TextView
     private val weekdays = arrayOf("", "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС")

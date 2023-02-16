@@ -11,7 +11,6 @@
             android:id="@+id/text_professor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:textAlignment="center"
@@ -21,7 +20,8 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.265"/>
+            app:layout_constraintVertical_bias="0.265"
+            android:fontFamily="sans-serif-black" />
     <TextView
             android:layout_width="389dp"
             android:layout_height="580dp"
@@ -46,6 +46,7 @@
             android:textStyle="bold"
             app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintVertical_bias="0.0"/>
+
     <TextView
             android:text="@string/back"
             android:layout_width="wrap_content"
@@ -55,7 +56,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/scheduleText_prof"
             app:layout_constraintStart_toEndOf="@+id/prof_name_status"
-            android:clickable="true"/>
+            android:clickable="true"
+            android:visibility="invisible" />
 
     <EditText
             android:id="@+id/editText2"
@@ -71,7 +73,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text_professor"
             app:layout_constraintVertical_bias="0.545"
-            tools:ignore="LabelFor,SpeakableTextPresentCheck"/>
+            tools:ignore="LabelFor,SpeakableTextPresentCheck"
+            android:visibility="visible" />
 
     <Button
             android:id="@+id/profSearchBtn"
@@ -83,7 +86,8 @@
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editText2"
-            app:layout_constraintVertical_bias="0.349"/>
+            app:layout_constraintVertical_bias="0.349"
+            app:cornerRadius = "60dp"/>
     <Spinner
             android:layout_width="409dp"
             android:layout_height="wrap_content"
@@ -105,7 +109,8 @@
             app:layout_constraintTop_toBottomOf="@+id/editText2"
             app:layout_constraintHorizontal_bias="0.507"
             app:layout_constraintVertical_bias="0.349"
-            android:visibility="invisible"/>
+            android:visibility="invisible"
+            app:cornerRadius = "60dp" />
     <Button
             android:text="@string/onWeek"
             android:layout_width="104dp"
@@ -115,7 +120,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:visibility="invisible"
             android:clickable="true"
-            android:layout_marginBottom="48dp"/>
+            android:layout_marginBottom="48dp"
+            app:cornerRadius = "0dp"/>
     <Button
             android:text="@string/back"
             android:layout_width="104dp"
@@ -125,7 +131,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:visibility="invisible"
             android:clickable="false"
-            android:layout_marginBottom="48dp"/>
+            android:layout_marginBottom="48dp"
+            app:cornerRadius = "0dp"/>
     <Button
             android:text="@string/now"
             android:layout_width="104dp"
@@ -135,7 +142,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:visibility="invisible"
             android:clickable="false"
-            android:layout_marginBottom="48dp"/>
+            android:layout_marginBottom="48dp"
+            app:cornerRadius = "0dp"/>
     <Button
             android:id="@+id/prof_next_btn"
             android:text="@string/next"
@@ -145,7 +153,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:visibility="invisible"
             android:clickable="false"
-            android:layout_marginBottom="48dp"/>
+            android:layout_marginBottom="48dp"
+            app:cornerRadius = "0dp"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

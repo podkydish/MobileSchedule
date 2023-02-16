@@ -4,21 +4,25 @@
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/home_image"
-        android:title="@string/title_home" />
+        android:title="@string/title_home"
+            />
 
     <item
         android:id="@+id/navigation_student"
         android:icon="@drawable/student_image"
-        android:title="@string/title_student" />
+        android:title="@string/title_student"
+            />
 
     <item
         android:id="@+id/navigation_professor"
         android:icon="@drawable/prof_image"
-        android:title="@string/title_professor" />
+        android:title="@string/title_professor"
+           />
 
     <item
-        android:id="@+id/navigation_info"
-        android:icon="@drawable/info_image"
-        android:title="@string/title_info" />
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/settings"
+        android:title="@string/title_settings"
+           />
 
 </menu>

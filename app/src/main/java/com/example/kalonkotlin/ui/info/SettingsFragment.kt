@@ -10,19 +10,16 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.example.kalonkotlin.databinding.FragmentInfoBinding
+import com.example.kalonkotlin.databinding.FragmentSettingsBinding
 
 
-class InfoFragment : Fragment(), View.OnClickListener {
+class SettingsFragment : Fragment(), View.OnClickListener {
 
     lateinit var authorText: TextView
-    lateinit var mainText: TextView
-    lateinit var bottomImage: ImageView
-    lateinit var topImage: ImageView
     lateinit var backButton: TextView
     lateinit var authorButton: Button
 
-    private var _binding: FragmentInfoBinding? = null
+    private var _binding: FragmentSettingsBinding? = null
 
 
     private val binding get() = _binding!!
@@ -33,17 +30,13 @@ class InfoFragment : Fragment(), View.OnClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentInfoBinding.inflate(inflater, container, false)
+        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         val root: View = binding.root
         authorText = binding.authorText
-        mainText = binding.textInfo
-        bottomImage = binding.imageView2
-        topImage = binding.imageView
         backButton = binding.backBtnInfo
         authorButton = binding.authorBtn
         authorButton.setOnClickListener(this)
         backButton.setOnClickListener(this)
-        mainText.text = "Информации пока нет\nЗато можете глянуть на карты главного корпуса☝️ и оршанки\uD83D\uDC47"
 
         return root
     }
@@ -63,9 +56,6 @@ class InfoFragment : Fragment(), View.OnClickListener {
             binding.authorBtn -> {
                 authorText.visibility = View.VISIBLE
                 authorButton.visibility = View.INVISIBLE
-                mainText.visibility = View.INVISIBLE
-                bottomImage.visibility = View.INVISIBLE
-                topImage.visibility = View.INVISIBLE
                 authorText.movementMethod = LinkMovementMethod.getInstance()
                 authorText.text = """
                     Авторы сия творения:

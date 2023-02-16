@@ -29,7 +29,6 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        val button = binding.extBtn
         maiNews?.settings?.cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
         maiNews = binding.webview
         maiNews!!.settings.javaScriptEnabled = true
@@ -37,10 +36,6 @@ class HomeFragment : Fragment() {
                 "document.getElementsByTagName('col-lg-8 me-auto mb-7 mb-lg-0')[0].style.display=\"none\"; " +
                 "})()"))
         maiNews?.loadUrl("https://mai.ru/press/news/")
-        button.setOnClickListener {
-            requireActivity().finish()
-            exitProcess(0)
-        }
         val textView: TextView = binding.textHome
         textView.text = "Добро пожаловать!"
         if (!Network.checkConnectivity(this.requireContext())) {
