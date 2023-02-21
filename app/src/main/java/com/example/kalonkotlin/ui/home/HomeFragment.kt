@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.kalonkotlin.client.Network
 import com.example.kalonkotlin.databinding.FragmentHomeBinding
-import kotlin.system.exitProcess
 
 class HomeFragment : Fragment() {
     private var maiNews: WebView? = null

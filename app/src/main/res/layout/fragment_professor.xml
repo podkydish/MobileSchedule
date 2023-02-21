@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
@@ -22,9 +21,10 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.265"
             android:fontFamily="sans-serif-black" />
+
     <TextView
-            android:layout_width="389dp"
-            android:layout_height="580dp"
+            android:layout_width="415dp"
+            android:layout_height="620dp"
             android:id="@+id/scheduleText_prof"
             android:visibility="invisible"
             android:scrollbars="vertical"
@@ -33,31 +33,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/now_prof"
             app:layout_constraintHorizontal_bias="0.47"
-            app:layout_constraintVertical_bias="1.0"/>
-    <TextView
-            android:layout_width="288dp"
-            android:layout_height="43dp"
-            android:id="@+id/prof_name_status"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/scheduleText_prof"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintHorizontal_bias="0.495"
-            app:layout_constraintVertical_bias="0.0"/>
-
-    <TextView
-            android:text="@string/back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/backTextBtn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/scheduleText_prof"
-            app:layout_constraintStart_toEndOf="@+id/prof_name_status"
-            android:clickable="true"
-            android:visibility="invisible" />
+            app:layout_constraintVertical_bias="1.0" />
 
     <EditText
             android:id="@+id/editText2"
@@ -87,7 +63,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editText2"
             app:layout_constraintVertical_bias="0.349"
-            app:cornerRadius = "60dp"/>
+            app:cornerRadius="60dp" />
+
     <Spinner
             android:layout_width="409dp"
             android:layout_height="wrap_content"
@@ -97,7 +74,9 @@
             app:layout_constraintTop_toBottomOf="@+id/text_professor"
             app:layout_constraintBottom_toTopOf="@+id/editText2"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintVertical_bias="0.672" android:visibility="invisible"/>
+            app:layout_constraintVertical_bias="0.672"
+            android:visibility="invisible" />
+
     <Button
             android:text="@string/stud_search_btn"
             android:layout_width="wrap_content"
@@ -110,7 +89,8 @@
             app:layout_constraintHorizontal_bias="0.507"
             app:layout_constraintVertical_bias="0.349"
             android:visibility="invisible"
-            app:cornerRadius = "60dp" />
+            app:cornerRadius="60dp" />
+
     <Button
             android:text="@string/onWeek"
             android:layout_width="104dp"
@@ -121,7 +101,8 @@
             android:visibility="invisible"
             android:clickable="true"
             android:layout_marginBottom="48dp"
-            app:cornerRadius = "0dp"/>
+            app:cornerRadius="0dp" />
+
     <Button
             android:text="@string/back"
             android:layout_width="104dp"
@@ -132,7 +113,8 @@
             android:visibility="invisible"
             android:clickable="false"
             android:layout_marginBottom="48dp"
-            app:cornerRadius = "0dp"/>
+            app:cornerRadius="0dp" />
+
     <Button
             android:text="@string/now"
             android:layout_width="104dp"
@@ -143,7 +125,8 @@
             android:visibility="invisible"
             android:clickable="false"
             android:layout_marginBottom="48dp"
-            app:cornerRadius = "0dp"/>
+            app:cornerRadius="0dp" />
+
     <Button
             android:id="@+id/prof_next_btn"
             android:text="@string/next"
@@ -154,7 +137,7 @@
             android:visibility="invisible"
             android:clickable="false"
             android:layout_marginBottom="48dp"
-            app:cornerRadius = "0dp"/>
+            app:cornerRadius="0dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

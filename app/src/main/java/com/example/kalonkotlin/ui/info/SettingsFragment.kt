@@ -4,25 +4,43 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.example.kalonkotlin.R
 import com.example.kalonkotlin.databinding.FragmentSettingsBinding
 
 
 class SettingsFragment : Fragment(), View.OnClickListener {
 
     lateinit var authorText: TextView
-    lateinit var backButton: TextView
     lateinit var authorButton: Button
-
     private var _binding: FragmentSettingsBinding? = null
-
-
     private val binding get() = _binding!!
+
+
+    @Deprecated("Deprecated in Java")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        if (id == R.id.item1) {
+            activity?.onBackPressed()
+
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.settings, menu);
+        super.onCreateOptionsMenu(menu, inflater)
+    }
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
@@ -32,11 +50,10 @@ class SettingsFragment : Fragment(), View.OnClickListener {
     ): View {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         val root: View = binding.root
+        setHasOptionsMenu(true)
         authorText = binding.authorText
-        backButton = binding.backBtnInfo
         authorButton = binding.authorBtn
         authorButton.setOnClickListener(this)
-        backButton.setOnClickListener(this)
 
         return root
     }
@@ -49,10 +66,6 @@ class SettingsFragment : Fragment(), View.OnClickListener {
     @SuppressLint("SetTextI18n")
     override fun onClick(p0: View?) {
         when (p0) {
-            binding.backBtnInfo -> {
-                activity?.onBackPressed()
-            }
-
             binding.authorBtn -> {
                 authorText.visibility = View.VISIBLE
                 authorButton.visibility = View.INVISIBLE

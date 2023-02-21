@@ -6,13 +6,34 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Spinner
+import android.widget.TextView
+import android.widget.Toast
+
 
 import androidx.fragment.app.Fragment
+import com.example.kalonkotlin.MainActivity
 import com.example.kalonkotlin.R
-import com.example.kalonkotlin.client.*
+import com.example.kalonkotlin.client.APP_PREFERENCES
+import com.example.kalonkotlin.client.ARRAY_REGEX
+import com.example.kalonkotlin.client.BOOKS_SMILE
+import com.example.kalonkotlin.client.CALENDAR_SMILE
+import com.example.kalonkotlin.client.DATE_FORMATTER
+import com.example.kalonkotlin.client.NO_PAIRS
+import com.example.kalonkotlin.client.Network
+import com.example.kalonkotlin.client.PROFESSOR_SMILE
+import com.example.kalonkotlin.client.STUDENT_SMILE
+import com.example.kalonkotlin.client.TIME_SMILE
+import com.example.kalonkotlin.client.UNIVERSITY_SMILE
+
 
 import com.example.kalonkotlin.client.entities.Professor
 import com.example.kalonkotlin.client.entities.Schedule
@@ -23,7 +44,6 @@ import java.time.ZoneId
 import java.util.LinkedList
 import java.util.Locale
 import java.util.UUID
-
 
 
 import java.util.stream.Collectors
@@ -44,91 +64,28 @@ class ProfessorFragment : Fragment() {
     private lateinit var prevDay: Button
     private lateinit var todayBtn: Button
     private lateinit var onWeekBtn: Button
-    private lateinit var profName: TextView
+    private lateinit var searchBtn: Button
     private lateinit var allSchedule: List<Schedule>
     private var date = LocalDate.now()
-    private lateinit var backTextBtn: TextView
     private lateinit var sPref: SharedPreferences
+    private lateinit var input: EditText
     private var _binding: FragmentProfessorBinding? = null
 
     private val binding get() = _binding!!
 
-    @SuppressLint("SetTextI18n")
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentProfessorBinding.inflate(inflater, container, false)
-        val root: View = binding.root
 
-        if (!Network.checkConnectivity(this.requireContext())) {
-            Toast.makeText(this.requireContext(), "Проверьте подключение к интернету", Toast.LENGTH_LONG).show()
-        }
-        scheduleText = root.findViewById(R.id.scheduleText_prof)
-        nextDay = root.findViewById(R.id.prof_next_btn)
-        prevDay = root.findViewById(R.id.back_prof)
-        todayBtn = root.findViewById(R.id.now_prof)
-        onWeekBtn = root.findViewById(R.id.onWeek_prof)
+    @Deprecated("Deprecated in Java")
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.professor, menu);
+        super.onCreateOptionsMenu(menu, inflater)
+    }
 
-        backTextBtn = root.findViewById(R.id.backTextBtn)
-
-        profName = root.findViewById(R.id.prof_name_status)
-        profInfoText = root.findViewById(R.id.text_professor)
-        profInfoText.text = "Введите ваше ФИО"
-        profSpinner = root.findViewById(R.id.chooseProfSpin)
-        searchNameBtn = root.findViewById(R.id.profChooseBtn)
-        backTextBtn.visibility = View.INVISIBLE
-        val input = root.findViewById<EditText>(R.id.editText2)
-        input.hint = "Вводить сюда..."
-
-        val searchBtn = root.findViewById<Button>(R.id.profSearchBtn)
-
-        if (loadPref() != "") {
-            outputProfessors = LinkedList(allProfessors)
-            (outputProfessors as LinkedList<Professor>).removeIf { prof: Professor ->
-                prof.siteId == UUID.fromString("00000000-0000-0000-0000-000000000000")
-            }
-            for (professor in outputProfessors) {
-                if (professor.getFullName() == loadPref()) {
-                    clientProfessor = professor
-                    break
-                }
-            }
-        }
-        backTextBtn.visibility = View.VISIBLE
-        backTextBtn.isClickable = true
-        searchBtn.visibility = View.INVISIBLE
-        input.visibility = View.INVISIBLE
-        searchBtn.visibility = View.GONE
-        searchBtn.isClickable = false
-        if (clientProfessor != null) {
-            searchByProf()
-        }
-
-        searchBtn.setOnClickListener {
-            if (input.text.toString().split(" ".toRegex()).dropLastWhile { it.isEmpty() }
-                    .toTypedArray().size < 5) { // Считывание ФИО преподавателя
-                backTextBtn.visibility = View.VISIBLE
-                backTextBtn.isClickable = true
-                profSpinner.visibility = View.VISIBLE
-                searchNameBtn.visibility = View.VISIBLE
-                searchBtn.visibility = View.INVISIBLE
-                input.visibility = View.INVISIBLE
-                professorSearch(input.text.toString().lowercase(Locale.getDefault()))
-            } else {
-                input.hint = "Проверьте написание и повторите попытку"
-            }
-        }
-        searchNameBtn.setOnClickListener {
-            backTextBtn.visibility = View.VISIBLE
-            backTextBtn.isClickable = true
-            profName.visibility = View.VISIBLE
-            clientProfessor = outputProfessors[profSpinner.selectedItemPosition]
-            searchByProf()
-        }
-        backTextBtn.setOnClickListener {
-            profName.visibility = View.INVISIBLE
+    @Deprecated("Deprecated in Java")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        if (id == R.id.item1) {
+            (activity as MainActivity?)
+                ?.setActionBarTitle("Препподаватель")
             profInfoText.visibility = View.VISIBLE
             searchNameBtn.visibility = View.VISIBLE
             onWeekBtn.visibility = View.INVISIBLE
@@ -143,9 +100,76 @@ class ProfessorFragment : Fragment() {
             input.visibility = View.VISIBLE
             searchBtn.visibility = View.VISIBLE
             input.hint = "Вводить сюда..."
-            backTextBtn.visibility = View.INVISIBLE
-            backTextBtn.isClickable = false
         }
+        return super.onOptionsItemSelected(item)
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentProfessorBinding.inflate(inflater, container, false)
+        val root: View = binding.root
+        setHasOptionsMenu(true)
+        if (!Network.checkConnectivity(this.requireContext())) {
+            Toast.makeText(this.requireContext(), "Проверьте подключение к интернету", Toast.LENGTH_LONG).show()
+        }
+        scheduleText = root.findViewById(R.id.scheduleText_prof)
+        nextDay = root.findViewById(R.id.prof_next_btn)
+        prevDay = root.findViewById(R.id.back_prof)
+        todayBtn = root.findViewById(R.id.now_prof)
+        onWeekBtn = root.findViewById(R.id.onWeek_prof)
+
+
+        profInfoText = root.findViewById(R.id.text_professor)
+        profInfoText.text = "Введите ваше ФИО"
+        profSpinner = root.findViewById(R.id.chooseProfSpin)
+        searchNameBtn = root.findViewById(R.id.profChooseBtn)
+        input = root.findViewById(R.id.editText2)
+        input.hint = "Вводить сюда..."
+        searchBtn = root.findViewById(R.id.profSearchBtn)
+
+        if (loadPref() != "") {
+            outputProfessors = LinkedList(allProfessors)
+            (outputProfessors as LinkedList<Professor>).removeIf { prof: Professor ->
+                prof.siteId == UUID.fromString("00000000-0000-0000-0000-000000000000")
+            }
+            for (professor in outputProfessors) {
+                if (professor.getFullName() == loadPref()) {
+                    clientProfessor = professor
+                    break
+                }
+            }
+        }
+
+        searchBtn.visibility = View.INVISIBLE
+        input.visibility = View.INVISIBLE
+        searchBtn.visibility = View.GONE
+        searchBtn.isClickable = false
+        if (clientProfessor != null) {
+            searchByProf()
+        }
+
+        searchBtn.setOnClickListener {
+            if (input.text.toString().split(" ".toRegex()).dropLastWhile { it.isEmpty() }
+                    .toTypedArray().size < 5) { // Считывание ФИО преподавателя
+                profSpinner.visibility = View.VISIBLE
+                searchNameBtn.visibility = View.VISIBLE
+                searchBtn.visibility = View.INVISIBLE
+                input.visibility = View.INVISIBLE
+                professorSearch(input.text.toString().lowercase(Locale.getDefault()))
+            } else {
+                input.hint = "Проверьте написание и повторите попытку"
+            }
+        }
+        searchNameBtn.setOnClickListener {
+
+            clientProfessor = outputProfessors[profSpinner.selectedItemPosition]
+            searchByProf()
+        }
+
         nextDay.setOnClickListener {
             date = date.plusDays(1)
             searchByDate(allSchedule, date)
@@ -174,15 +198,19 @@ class ProfessorFragment : Fragment() {
                 scheduleText.text = localText + answer
             }
         }
-
-
-        //
         return root
     }
 
 
     @SuppressLint("SetTextI18n")
     private fun searchByProf() {
+        if (clientProfessor!!.lastname == "Коновалов") {
+            (activity as MainActivity?)
+                ?.setActionBarTitle("Коновалыч")
+        } else {
+            (activity as MainActivity?)
+                ?.setActionBarTitle(clientProfessor!!.lastname)
+        }
         profInfoText.visibility = View.INVISIBLE
         profSpinner.visibility = View.INVISIBLE
         searchNameBtn.visibility = View.INVISIBLE
@@ -191,7 +219,6 @@ class ProfessorFragment : Fragment() {
         prevDay.visibility = View.VISIBLE
         nextDay.visibility = View.VISIBLE
         scheduleText.visibility = View.VISIBLE
-        profName.text = clientProfessor!!.firstname + " " + clientProfessor!!.secondname
         allSchedule = Schedule.scheduleRequest(
             "SELECT group_name, lesson_day, lesson_name," +
                     "professor_lastname, professor_firstname, professor_secondname," +

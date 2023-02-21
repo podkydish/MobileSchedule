@@ -6,13 +6,32 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import androidx.appcompat.widget.AppCompatImageView
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.Spinner
+import android.widget.TextView
+import android.widget.Toast
+
 import androidx.fragment.app.Fragment
+import com.example.kalonkotlin.MainActivity
 import com.example.kalonkotlin.R
-import com.example.kalonkotlin.client.*
+import com.example.kalonkotlin.client.APP_PREFERENCES
+import com.example.kalonkotlin.client.ARRAY_REGEX
+import com.example.kalonkotlin.client.BOOKS_SMILE
+import com.example.kalonkotlin.client.CALENDAR_SMILE
+import com.example.kalonkotlin.client.DATE_FORMATTER
+import com.example.kalonkotlin.client.NO_PAIRS
+import com.example.kalonkotlin.client.Network
+import com.example.kalonkotlin.client.PROFESSOR_SMILE
+import com.example.kalonkotlin.client.STUDENT_SMILE
+import com.example.kalonkotlin.client.TIME_SMILE
+import com.example.kalonkotlin.client.UNIVERSITY_SMILE
+
 import com.example.kalonkotlin.client.entities.Group
 import com.example.kalonkotlin.client.entities.Schedule
 import com.example.kalonkotlin.databinding.FragmentStudentBinding
@@ -45,22 +64,64 @@ class StudentFragment : Fragment(), View.OnClickListener {
     private lateinit var facultyText: TextView
     private lateinit var groupText: TextView
     private lateinit var searchBtn: Button
-    private lateinit var backButton: TextView
     private lateinit var nextButton: Button
     private lateinit var prevButton: Button
     private lateinit var onWeekBtn: Button
     private lateinit var nowBtn: Button
     private lateinit var scheduleText: TextView
-    private lateinit var statusText: TextView
     private val weekdays = arrayOf("", "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС")
+
+    @Deprecated("Deprecated in Java")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        if (id == R.id.item1) {
+            (activity as MainActivity?)
+                ?.setActionBarTitle("Студент")
+            chooseCourse.visibility = View.VISIBLE //блок насилия над элементами
+            chooseFac.visibility = View.VISIBLE
+            courseText.visibility = View.VISIBLE
+            facultyText.visibility = View.VISIBLE
+            chooseBtn.visibility = View.INVISIBLE
+            searchBtn.visibility = View.VISIBLE
+            chooseGroup.visibility = View.INVISIBLE
+            groupText.visibility = View.INVISIBLE
+            searchBtn.isClickable = true
+            chooseBtn.isClickable = false
+            nextButton.visibility = View.INVISIBLE
+            nextButton.isClickable = false
+
+            prevButton.visibility = View.INVISIBLE
+            prevButton.isClickable = false
+
+            onWeekBtn.visibility = View.INVISIBLE
+            onWeekBtn.isClickable = false
+
+            nowBtn.visibility = View.INVISIBLE
+            nowBtn.isClickable = false
+
+            scheduleText.visibility = View.INVISIBLE
+
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.student, menu);
+        super.onCreateOptionsMenu(menu, inflater)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         _binding = FragmentStudentBinding.inflate(inflater, container, false)
         val root: View = binding.root
+        setHasOptionsMenu(true)
 
         if (!Network.checkConnectivity(this.requireContext())) {
             Toast.makeText(this.requireContext(), "Проверьте подключение к интернету", Toast.LENGTH_LONG).show()
@@ -71,7 +132,6 @@ class StudentFragment : Fragment(), View.OnClickListener {
             e.printStackTrace()
             Toast.makeText(context, "Ошибка подключения к серверу", Toast.LENGTH_SHORT).show()
         }
-        statusText = root.findViewById(R.id.group_name_status)
         chooseCourse = root.findViewById(R.id.courseNumber)
         chooseFac = root.findViewById(R.id.facultyNumber)
         chooseGroup = root.findViewById(R.id.group)
@@ -82,7 +142,6 @@ class StudentFragment : Fragment(), View.OnClickListener {
         mainText.text = "Введите вашу группу"
         chooseBtn = root.findViewById(R.id.chooseBtn)
         searchBtn = root.findViewById(R.id.stud_search_btn)
-        backButton = root.findViewById(R.id.backTextBtn)
         nextButton = root.findViewById(R.id.next_day_button)
         prevButton = root.findViewById(R.id.back_prof)
         onWeekBtn = root.findViewById(R.id.on_week_button)
@@ -108,7 +167,6 @@ class StudentFragment : Fragment(), View.OnClickListener {
         }
         searchBtn.setOnClickListener(this)
         chooseBtn.setOnClickListener(this)
-        backButton.setOnClickListener(this)
         nextButton.setOnClickListener(this)
         prevButton.setOnClickListener(this)
         onWeekBtn.setOnClickListener(this)
@@ -121,11 +179,11 @@ class StudentFragment : Fragment(), View.OnClickListener {
     }
 
     private fun searchByGroup() {
-        statusText.text = clientGroup!!.name
+        //вывод в app bar выбранной группы
+        (activity as MainActivity?)
+            ?.setActionBarTitle(clientGroup!!.name)
         savePref(clientGroup.toString())
         chooseBtn.isClickable = false
-        backButton.isClickable = true
-        backButton.visibility = View.VISIBLE
         chooseBtn.visibility = View.INVISIBLE
         chooseGroup.visibility = View.INVISIBLE
         groupText.visibility = View.INVISIBLE
@@ -261,8 +319,6 @@ $NO_PAIRS"""
                         groupText.visibility = View.VISIBLE
                         searchBtn.isClickable = false
                         chooseBtn.isClickable = true
-                        backButton.isClickable = true
-                        backButton.visibility = View.VISIBLE
                         for (group in groups) {
                             spinnerArray.add(group.name)
                         }
@@ -284,34 +340,6 @@ $NO_PAIRS"""
                         }
                     }
                     searchByGroup()
-                }
-                R.id.backTextBtn -> {
-                    chooseCourse.visibility = View.VISIBLE //блок насилия над элементами
-                    chooseFac.visibility = View.VISIBLE
-                    courseText.visibility = View.VISIBLE
-                    facultyText.visibility = View.VISIBLE
-                    chooseBtn.visibility = View.INVISIBLE
-                    searchBtn.visibility = View.VISIBLE
-                    chooseGroup.visibility = View.INVISIBLE
-                    groupText.visibility = View.INVISIBLE
-                    searchBtn.isClickable = true
-                    chooseBtn.isClickable = false
-                    backButton.isClickable = false
-                    backButton.visibility = View.INVISIBLE
-                    nextButton.visibility = View.INVISIBLE
-                    nextButton.isClickable = false
-
-                    prevButton.visibility = View.INVISIBLE
-                    prevButton.isClickable = false
-
-                    onWeekBtn.visibility = View.INVISIBLE
-                    onWeekBtn.isClickable = false
-
-                    nowBtn.visibility = View.INVISIBLE
-                    nowBtn.isClickable = false
-
-                    scheduleText.visibility = View.INVISIBLE
-                    statusText.visibility = View.INVISIBLE
                 }
                 R.id.next_day_button -> {
                     scheduleText.text = ""

@@ -56,6 +56,7 @@
             app:cornerRadius="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="48dp" />
+
     <TextView
             android:id="@+id/text_student"
             android:layout_width="match_parent"
@@ -71,31 +72,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.173" />
-
-    <TextView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:id="@+id/group_name_status"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/scheduleText_prof"
-            app:layout_constraintVertical_bias="0.115"
-            android:textStyle="bold"
-            android:textSize="24sp"
-            app:layout_constraintEnd_toStartOf="@+id/backTextBtn"
-            app:layout_constraintHorizontal_bias="0.50" />
-
-    <TextView
-            android:text="@string/back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/backTextBtn"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/scheduleText_prof"
-            app:layout_constraintStart_toEndOf="@+id/group_name_status"
-            android:clickable="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:minHeight="48dp" />
 
     <TextView
             android:id="@+id/courseText"
@@ -132,8 +108,8 @@
             app:layout_constraintVertical_bias="0.772" />
 
     <TextView
-            android:layout_width="0dp"
-            android:layout_height="575dp"
+            android:layout_width="411dp"
+            android:layout_height="621dp"
             android:id="@+id/scheduleText_prof"
             android:visibility="invisible"
             android:scrollbars="vertical"
@@ -189,8 +165,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text_student"
             app:layout_constraintVertical_bias="0.67"
-            app:cornerRadius = "60dp"
-            />
+            app:cornerRadius="60dp" />
 
     <Button
             android:id="@+id/stud_search_btn"
@@ -205,10 +180,7 @@
             app:layout_constraintTop_toBottomOf="@+id/text_student"
             app:layout_constraintVertical_bias="0.67"
             tools:ignore="DuplicateClickableBoundsCheck"
-            app:cornerRadius = "60dp"
-            />
-
-
+            app:cornerRadius="60dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
