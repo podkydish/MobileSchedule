@@ -31,6 +31,7 @@ import com.example.kalonkotlin.client.PROFESSOR_SMILE
 import com.example.kalonkotlin.client.STUDENT_SMILE
 import com.example.kalonkotlin.client.TIME_SMILE
 import com.example.kalonkotlin.client.UNIVERSITY_SMILE
+import com.example.kalonkotlin.client.connection
 
 import com.example.kalonkotlin.client.entities.Group
 import com.example.kalonkotlin.client.entities.Schedule
@@ -41,6 +42,7 @@ import java.util.Collections
 import java.util.LinkedList
 import java.util.Objects
 import java.util.stream.Collectors
+import org.w3c.dom.Text
 
 
 class StudentFragment : Fragment(), View.OnClickListener {
@@ -48,13 +50,13 @@ class StudentFragment : Fragment(), View.OnClickListener {
 
 
     private val binding get() = _binding!!
-    private val SAVED_TEXT = "client_group"
+    private val savedText = "client_group"
     private var clientGroup: Group? = null
     private var groups: List<Group> = LinkedList()
     private var allGroups: List<Group> = LinkedList()
     private var allSchedule: List<Schedule> = LinkedList()
     private var date: LocalDate = LocalDate.now()
-    lateinit var sPref: SharedPreferences
+    private lateinit var sPref: SharedPreferences
     private lateinit var chooseBtn: Button
     private lateinit var chooseCourse: Spinner
     private lateinit var chooseFac: Spinner
@@ -69,14 +71,14 @@ class StudentFragment : Fragment(), View.OnClickListener {
     private lateinit var onWeekBtn: Button
     private lateinit var nowBtn: Button
     private lateinit var scheduleText: TextView
-    private val weekdays = arrayOf("", "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС")
+    private lateinit var weekdays: Array<String>
 
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         if (id == R.id.item1) {
             (activity as MainActivity?)
-                ?.setActionBarTitle("Студент")
+                ?.setActionBarTitle(getString(R.string.title_student))
             chooseCourse.visibility = View.VISIBLE //блок насилия над элементами
             chooseFac.visibility = View.VISIBLE
             courseText.visibility = View.VISIBLE
@@ -122,16 +124,7 @@ class StudentFragment : Fragment(), View.OnClickListener {
         _binding = FragmentStudentBinding.inflate(inflater, container, false)
         val root: View = binding.root
         setHasOptionsMenu(true)
-
-        if (!Network.checkConnectivity(this.requireContext())) {
-            Toast.makeText(this.requireContext(), "Проверьте подключение к интернету", Toast.LENGTH_LONG).show()
-        }
-        try {
-            allGroups = Group.groupRequest("SELECT * FROM public.groups")
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(context, "Ошибка подключения к серверу", Toast.LENGTH_SHORT).show()
-        }
+        weekdays = resources.getStringArray(R.array.weekdays)
         chooseCourse = root.findViewById(R.id.courseNumber)
         chooseFac = root.findViewById(R.id.facultyNumber)
         chooseGroup = root.findViewById(R.id.group)
@@ -139,7 +132,6 @@ class StudentFragment : Fragment(), View.OnClickListener {
         courseText = root.findViewById(R.id.courseText)
         facultyText = root.findViewById(R.id.facultyText)
         groupText = root.findViewById(R.id.groupText)
-        mainText.text = "Введите вашу группу"
         chooseBtn = root.findViewById(R.id.chooseBtn)
         searchBtn = root.findViewById(R.id.stud_search_btn)
         nextButton = root.findViewById(R.id.next_day_button)
@@ -148,232 +140,283 @@ class StudentFragment : Fragment(), View.OnClickListener {
         nowBtn = root.findViewById(R.id.now_button)
         scheduleText = root.findViewById(R.id.scheduleText_prof)
 
-        if (!Objects.equals(loadPref(), "")) {
-            for (group in allGroups) {
-                if (group.name == loadPref()) {
-                    clientGroup = group
-                    break
+        if (!Network.checkConnectivity(this.requireContext())) {
+            Toast.makeText(this.requireContext(), getString(R.string.connection_error), Toast.LENGTH_LONG).show()
+            if (!Objects.equals(loadPref(savedText), "")){
+                chooseCourse.visibility = View.INVISIBLE //блок насилия над элементами
+                chooseFac.visibility = View.INVISIBLE
+                courseText.visibility = View.INVISIBLE
+                facultyText.visibility = View.INVISIBLE
+                chooseBtn.isClickable = false
+                chooseBtn.visibility = View.INVISIBLE
+                chooseGroup.visibility = View.INVISIBLE
+                groupText.visibility = View.INVISIBLE
+                mainText.visibility = View.INVISIBLE
+                scheduleText.visibility = View.VISIBLE
+                searchBtn.visibility = View.GONE
+                scheduleText.movementMethod = ScrollingMovementMethod()
+                loadOnWeek()
+                (activity as MainActivity?)
+                    ?.setActionBarTitle(loadPref(savedText))
+            }
+        } else {
+            try {
+                allGroups = Group.groupRequest("SELECT * FROM public.groups")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(context, getString(R.string.database_error), Toast.LENGTH_SHORT).show()
+            }
+
+            mainText.text = getString(R.string.group_input)
+
+
+            if (!Objects.equals(loadPref(savedText), "")) {
+                for (group in allGroups) {
+                    if (group.name == loadPref(savedText)) {
+                        clientGroup = group
+                        break
+                    }
                 }
             }
+            if (clientGroup != null) {
+                chooseCourse.visibility = View.INVISIBLE //блок насилия над элементами
+                chooseFac.visibility = View.INVISIBLE
+                courseText.visibility = View.INVISIBLE
+                facultyText.visibility = View.INVISIBLE
+                searchBtn.visibility = View.GONE
+                searchBtn.isClickable = false
+                searchByGroup()
+            }
+            searchBtn.setOnClickListener(this)
+            chooseBtn.setOnClickListener(this)
+            nextButton.setOnClickListener(this)
+            prevButton.setOnClickListener(this)
+            onWeekBtn.setOnClickListener(this)
+            nowBtn.setOnClickListener(this)
+
+
         }
-        if (clientGroup != null) {
-            chooseCourse.visibility = View.INVISIBLE //блок насилия над элементами
-            chooseFac.visibility = View.INVISIBLE
-            courseText.visibility = View.INVISIBLE
-            facultyText.visibility = View.INVISIBLE
-            searchBtn.visibility = View.GONE
-            searchBtn.isClickable = false
-            searchByGroup()
+            return root
         }
-        searchBtn.setOnClickListener(this)
-        chooseBtn.setOnClickListener(this)
-        nextButton.setOnClickListener(this)
-        prevButton.setOnClickListener(this)
-        onWeekBtn.setOnClickListener(this)
-        nowBtn.setOnClickListener(this)
 
 
-
-
-        return root
-    }
-
-    private fun searchByGroup() {
-        //вывод в app bar выбранной группы
-        (activity as MainActivity?)
-            ?.setActionBarTitle(clientGroup!!.name)
-        savePref(clientGroup.toString())
-        chooseBtn.isClickable = false
-        chooseBtn.visibility = View.INVISIBLE
-        chooseGroup.visibility = View.INVISIBLE
-        groupText.visibility = View.INVISIBLE
-        mainText.visibility = View.INVISIBLE
-        nextButton.visibility = View.VISIBLE
-        nextButton.isClickable = true
-        prevButton.visibility = View.VISIBLE
-        prevButton.isClickable = true
-        onWeekBtn.visibility = View.VISIBLE
-        onWeekBtn.isClickable = true
-        nowBtn.visibility = View.VISIBLE
-        nowBtn.isClickable = true
-        scheduleText.visibility = View.VISIBLE
-        try {
-            allSchedule = Schedule.scheduleRequest("SELECT group_name, lesson_day, lesson_name,"
-                    + " professor_lastname, professor_firstname, professor_secondname,"
-                    + "lesson_number, lesson_type, rooms FROM public.groups AS g"
-                    + " INNER JOIN public.lessons_groups AS lg ON lg.group_id=g.group_id"
-                    + " INNER JOIN public.lessons AS l ON l.lesson_id = lg.lesson_id"
-                    + " INNER JOIN public.lesson_rooms AS lr ON lr.room_id = l.lesson_id"
-                    + " INNER JOIN public.lessons_professors AS lp ON lp.lesson_id = l.lesson_id"
-                    + " INNER JOIN public.professors AS p ON p.professor_id = lp.professor_id"
-                    + " WHERE g.group_name='" + clientGroup!!.name + "'"
-                    + " ORDER BY lesson_day")
-            searchByDate(allSchedule, date)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(context, "Ошибка подключения к серверу", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    @SuppressLint("SetTextI18n")
-    private fun searchByDate(allSchedule: List<Schedule>, date: LocalDate) { // поиск расписания по дате
-        println("поиск и вывод сообщения")
-        val answer: StringBuilder
-        var lessons: List<Schedule> = ArrayList()
-        for (sc in allSchedule) {
-            if (sc.lesson_date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().equals(date)) {
-                lessons = lessons + sc
+        private fun searchByGroup() {
+            //вывод в app bar выбранной группы
+            (activity as MainActivity?)
+                ?.setActionBarTitle(clientGroup!!.name)
+            savePref(clientGroup.toString(), savedText)
+            chooseBtn.isClickable = false
+            chooseBtn.visibility = View.INVISIBLE
+            chooseGroup.visibility = View.INVISIBLE
+            groupText.visibility = View.INVISIBLE
+            mainText.visibility = View.INVISIBLE
+            nextButton.visibility = View.VISIBLE
+            nextButton.isClickable = true
+            prevButton.visibility = View.VISIBLE
+            prevButton.isClickable = true
+            onWeekBtn.visibility = View.VISIBLE
+            onWeekBtn.isClickable = true
+            nowBtn.visibility = View.VISIBLE
+            nowBtn.isClickable = true
+            scheduleText.visibility = View.VISIBLE
+            try {
+                allSchedule = Schedule.scheduleRequest("SELECT group_name, lesson_day, lesson_name,"
+                        + " professor_lastname, professor_firstname, professor_secondname,"
+                        + "lesson_number, lesson_type, rooms FROM public.groups AS g"
+                        + " INNER JOIN public.lessons_groups AS lg ON lg.group_id=g.group_id"
+                        + " INNER JOIN public.lessons AS l ON l.lesson_id = lg.lesson_id"
+                        + " INNER JOIN public.lesson_rooms AS lr ON lr.room_id = l.lesson_id"
+                        + " INNER JOIN public.lessons_professors AS lp ON lp.lesson_id = l.lesson_id"
+                        + " INNER JOIN public.professors AS p ON p.professor_id = lp.professor_id"
+                        + " WHERE g.group_name='" + clientGroup!!.name + "'"
+                        + " ORDER BY lesson_day")
+                saveOnWeek()
+                searchByDate(allSchedule, date)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(context, getString(R.string.database_error), Toast.LENGTH_SHORT).show()
             }
         }
-        if (lessons.size !== 0) {
-            answer = StringBuilder()
-            answer.append("ㅤㅤㅤㅤㅤ").append(CALENDAR_SMILE).append(date.format(DATE_FORMATTER)).append(" (").append(weekdays.get(date.dayOfWeek.value)).append(")").append("\n")
-            val lessonsForDay: List<Schedule> = lessons.stream()
-                .filter { lesson -> lesson.lesson_date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().equals(date) }
-                .sorted(Comparator.comparing(Schedule::lesson_number)).collect(Collectors.toList())
-            for (lsn in lessonsForDay) {
-                scheduleMessage(answer, lsn)
+
+        @SuppressLint("SetTextI18n")
+        private fun searchByDate(allSchedule: List<Schedule>, date: LocalDate) { // поиск расписания по дате
+            val answer: StringBuilder
+            var lessons: List<Schedule> = ArrayList()
+            for (sc in allSchedule) {
+                if (sc.lesson_date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().equals(date)) {
+                    lessons = lessons + sc
+                }
             }
-            scheduleAnswer(date, date, answer)
-        } else {
-            scheduleText.text = """ㅤㅤㅤㅤㅤ$CALENDAR_SMILE${date.format(DATE_FORMATTER)} (${weekdays.get(date.dayOfWeek.value)})
+            if (lessons.size !== 0) {
+                answer = StringBuilder()
+                answer.append(getString(R.string.space)).append(CALENDAR_SMILE).append(date.format(DATE_FORMATTER)).append(" (").append(weekdays[date.dayOfWeek.value]).append(")").append("\n")
+                val lessonsForDay: List<Schedule> = lessons.stream()
+                    .filter { lesson -> lesson.lesson_date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().equals(date) }
+                    .sorted(Comparator.comparing(Schedule::lesson_number)).collect(Collectors.toList())
+                for (lsn in lessonsForDay) {
+                    scheduleMessage(answer, lsn)
+                }
+                scheduleAnswer(date, date, answer)
+            } else {
+                scheduleText.text = """${getString(R.string.space)}$CALENDAR_SMILE${date.format(DATE_FORMATTER)} (${weekdays[date.dayOfWeek.value]})
 $NO_PAIRS"""
+            }
         }
-    }
 
-    private fun scheduleMessage(answer: java.lang.StringBuilder, lsn: Schedule) { // тело ответа для
-        // расписания
-        val localProfs = lsn.professor
-        // if (lsn.getLesson_date().equals(firstDayOfWeek)) {
-        // составление сообщения с данными о занятиях
-        answer.append("""
+        private fun scheduleMessage(answer: java.lang.StringBuilder, lsn: Schedule) { // тело ответа для
+            // расписания
+            val localProfs = lsn.professor
+            // if (lsn.getLesson_date().equals(firstDayOfWeek)) {
+            // составление сообщения с данными о занятиях
+            answer.append("""
     
     $TIME_SMILE
     """.trimIndent()).append(lsn.getNumberToTime()).append("\n")
-            .append(BOOKS_SMILE).append(lsn.name).append(" (")
-            .append(lsn.getLessonType()).append(")\n")
-            .append(UNIVERSITY_SMILE).append(lsn.room.replace(ARRAY_REGEX.toRegex(), "")).append("\n")
-            .append(PROFESSOR_SMILE)
-            .append(localProfs /*.get(0).getFullName()*/)
-        /* if (localProfs.size() > 1) {
+                .append(BOOKS_SMILE).append(lsn.name).append(" (")
+                .append(lsn.getLessonType()).append(")\n")
+                .append(UNIVERSITY_SMILE).append(lsn.room.replace(ARRAY_REGEX.toRegex(), "")).append("\n")
+                .append(PROFESSOR_SMILE)
+                .append(localProfs /*.get(0).getFullName()*/)
+            /* if (localProfs.size() > 1) {
                 for (int i = 1; i < localProfs.size(); i++) {
                     answer.append(", ").append(localProfs.get(i).getFullName());
                 }
             }*/answer.append("\n").append(STUDENT_SMILE)
-            .append(lsn.group_name.replace(ARRAY_REGEX.toRegex(), ""))
-            .append("\n").append("\n")
-        //  }
-        scheduleText.text = answer.toString()
-    }
+                .append(lsn.group_name.replace(ARRAY_REGEX.toRegex(), ""))
+                .append("\n").append("\n")
+            //  }
+            scheduleText.text = answer.toString()
+        }
 
-    @SuppressLint("SetTextI18n")
-    private fun scheduleAnswer(date: LocalDate,
-                               firstDayOfWeek: LocalDate, answer: java.lang.StringBuilder) { // построение ответа для расписания
-        scheduleText.text = answer.toString()
-        if (scheduleText.text == "" || scheduleText.text == """ㅤㅤㅤㅤㅤ$CALENDAR_SMILE${firstDayOfWeek.format(DATE_FORMATTER)} (${weekdays[date.dayOfWeek.value]})
+        @SuppressLint("SetTextI18n")
+        private fun scheduleAnswer(date: LocalDate,
+                                   firstDayOfWeek: LocalDate, answer: java.lang.StringBuilder) { // построение ответа для расписания
+            scheduleText.text = answer.toString()
+            if (scheduleText.text == "" || scheduleText.text == """${getString(R.string.space)}$CALENDAR_SMILE${firstDayOfWeek.format(DATE_FORMATTER)} (${weekdays[date.dayOfWeek.value]})
 """
-        ) {
-            scheduleText.text = """
+            ) {
+                scheduleText.text = """
             ${CALENDAR_SMILE + date.format(DATE_FORMATTER) + " (" + weekdays[date.dayOfWeek.value]})
             $NO_PAIRS
             """.trimIndent()
+            }
         }
-    }
 
-    fun savePref(prefValue: String?) {
+        private fun savePref(prefValue: String?, prefKey: String) {
+            sPref = requireActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
+            val ed = sPref.edit()
+            ed.putString(prefKey, prefValue)
+            ed.apply()
+        }
+
+        private fun loadPref(prefKey: String): String? {
+            sPref = requireActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
+            return sPref.getString(prefKey, "")
+        }
+
+        override fun onDestroyView() {
+            super.onDestroyView()
+            _binding = null
+        }
+    private fun saveOnWeek(){
+        savePref(scheduleText.text.toString(), "studentOnWeek")
+    }
+    private fun loadOnWeek(){
         sPref = requireActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
-        val ed = sPref.edit()
-        ed.putString(SAVED_TEXT, prefValue)
-        ed.apply()
+        val answer = sPref.getString("studentOnWeek", "")
+        scheduleText.text = answer
+        /*val firstDayOfWeek = date.minusDays((date.dayOfWeek.value - 1).toLong())
+        var localText = ""
+        for (i in 0..6) {
+            val currentDay = firstDayOfWeek.plusDays(i.toLong())
+            if (currentDay !== firstDayOfWeek) {
+                localText = scheduleText.text.toString()
+            }
+            searchByDate(allSchedule, currentDay)
+            val answer = scheduleText.text.toString()
+            scheduleText.text = localText + answer
+        }*/
     }
 
-    fun loadPref(): String? {
-        sPref = requireActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
-        return sPref.getString(SAVED_TEXT, "")
-    }
+        @SuppressLint("SetTextI18n")
+        override fun onClick(v: View?) {
+            if (v != null) {
+                when (v.id) {
+                    R.id.stud_search_btn -> {
+                        val faculty = chooseFac.selectedItem.toString()
+                        val course = chooseCourse.selectedItem.toString()
+                        groups = Group.groupRequest("SELECT * FROM public.groups WHERE group_faculty = $faculty AND group_course = $course")
+                        Collections.sort(groups, Comparator.comparing(Group::name))
+                        val spinnerArray: MutableList<String> = ArrayList() //накидываем в список группы
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    @SuppressLint("SetTextI18n")
-    override fun onClick(v: View?) {
-        if (v != null) {
-            when (v.id) {
-                R.id.stud_search_btn -> {
-                    val faculty = chooseFac.selectedItem.toString()
-                    val course = chooseCourse.selectedItem.toString()
-                    groups = Group.groupRequest("SELECT * FROM public.groups WHERE group_faculty = $faculty AND group_course = $course")
-                    Collections.sort(groups, Comparator.comparing(Group::name))
-                    val spinnerArray: MutableList<String> = ArrayList() //накидываем в список группы
-
-                    if (groups.isNotEmpty()) {
-                        chooseCourse.visibility = View.INVISIBLE //блок насилия над элементами
-                        chooseFac.visibility = View.INVISIBLE
-                        courseText.visibility = View.INVISIBLE
-                        facultyText.visibility = View.INVISIBLE
-                        chooseBtn.visibility = View.VISIBLE
-                        searchBtn.visibility = View.GONE
-                        chooseGroup.visibility = View.VISIBLE
-                        groupText.visibility = View.VISIBLE
-                        searchBtn.isClickable = false
-                        chooseBtn.isClickable = true
+                        if (groups.isNotEmpty()) {
+                            chooseCourse.visibility = View.INVISIBLE //блок насилия над элементами
+                            chooseFac.visibility = View.INVISIBLE
+                            courseText.visibility = View.INVISIBLE
+                            facultyText.visibility = View.INVISIBLE
+                            chooseBtn.visibility = View.VISIBLE
+                            searchBtn.visibility = View.GONE
+                            chooseGroup.visibility = View.VISIBLE
+                            groupText.visibility = View.VISIBLE
+                            searchBtn.isClickable = false
+                            chooseBtn.isClickable = true
+                            for (group in groups) {
+                                spinnerArray.add(group.name)
+                            }
+                        } else {
+                            Toast.makeText(context, getString(R.string.input_warning), Toast.LENGTH_SHORT).show()
+                        }
+                        val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, spinnerArray)
+                        // Определяем разметку для использования при выборе элемента
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        // Применяем адаптер к элементу spinner
+                        chooseGroup.adapter = adapter
+                    }
+                    R.id.chooseBtn -> {
+                        scheduleText.text = ""
                         for (group in groups) {
-                            spinnerArray.add(group.name)
+                            if (group.name == chooseGroup.selectedItem.toString()) {
+                                clientGroup = group
+                                break
+                            }
                         }
-                    } else {
-                        Toast.makeText(context, "Выбранных групп не существует, укажите верные данные", Toast.LENGTH_SHORT).show()
+                        searchByGroup()
                     }
-                    val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, spinnerArray)
-                    // Определяем разметку для использования при выборе элемента
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    // Применяем адаптер к элементу spinner
-                    chooseGroup.adapter = adapter
-                }
-                R.id.chooseBtn -> {
-                    scheduleText.text = ""
-                    for (group in groups) {
-                        if (group.name == chooseGroup.selectedItem.toString()) {
-                            clientGroup = group
-                            break
+                    R.id.next_day_button -> {
+                        scheduleText.text = ""
+                        date = date.plusDays(1)
+                        searchByDate(allSchedule, date)
+                    }
+                    R.id.back_prof -> {
+                        scheduleText.text = ""
+                        date = date.minusDays(1)
+                        searchByDate(allSchedule, date)
+                    }
+                    R.id.now_button -> {
+                        scheduleText.text = ""
+                        date = LocalDate.now()
+                        searchByDate(allSchedule, date)
+                    }
+                    R.id.on_week_button -> {
+                        scheduleText.movementMethod = ScrollingMovementMethod()
+                        scheduleText.text = ""
+                        val firstDayOfWeek = date.minusDays((date.dayOfWeek.value - 1).toLong())
+                        var localText = ""
+                        for (i in 0..6) {
+                            val currentDay = firstDayOfWeek.plusDays(i.toLong())
+                            if (currentDay !== firstDayOfWeek) {
+                                localText = scheduleText.text.toString()
+                            }
+                            searchByDate(allSchedule, currentDay)
+                            val answer = scheduleText.text.toString()
+                            scheduleText.text = localText + answer
                         }
+                        saveOnWeek()
                     }
-                    searchByGroup()
-                }
-                R.id.next_day_button -> {
-                    scheduleText.text = ""
-                    date = date.plusDays(1)
-                    searchByDate(allSchedule, date)
-                }
-                R.id.back_prof -> {
-                    scheduleText.text = ""
-                    date = date.minusDays(1)
-                    searchByDate(allSchedule, date)
-                }
-                R.id.now_button -> {
-                    scheduleText.text = ""
-                    date = LocalDate.now()
-                    searchByDate(allSchedule, date)
-                }
-                R.id.on_week_button -> {
-                    scheduleText.movementMethod = ScrollingMovementMethod()
-                    scheduleText.text = ""
-                    val firstDayOfWeek = date.minusDays((date.dayOfWeek.value - 1).toLong())
-                    var localText = ""
-                    for (i in 0..6) {
-                        val currentDay = firstDayOfWeek.plusDays(i.toLong())
-                        if (currentDay !== firstDayOfWeek) {
-                            localText = scheduleText.text.toString()
-                        }
-                        searchByDate(allSchedule, currentDay)
-                        val answer = scheduleText.text.toString()
-                        scheduleText.text = localText + answer
-                    }
+
                 }
 
             }
 
         }
-    }
 }

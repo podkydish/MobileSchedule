@@ -10,6 +10,8 @@ import android.webkit.WebView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.kalonkotlin.R
+import com.example.kalonkotlin.client.MAI_URL
 import com.example.kalonkotlin.client.Network
 import com.example.kalonkotlin.databinding.FragmentHomeBinding
 
@@ -34,11 +36,11 @@ class HomeFragment : Fragment() {
         maiNews!!.loadUrl(("javascript:(function() { " +
                 "document.getElementsByTagName('col-lg-8 me-auto mb-7 mb-lg-0')[0].style.display=\"none\"; " +
                 "})()"))
-        maiNews?.loadUrl("https://mai.ru/press/news/")
+        maiNews?.loadUrl(MAI_URL)
         val textView: TextView = binding.textHome
-        textView.text = "Добро пожаловать!"
+        textView.text = getString(R.string.hello_world)
         if (!Network.checkConnectivity(this.requireContext())) {
-            Toast.makeText(this.requireContext(), "Проверьте подключение к интернету", Toast.LENGTH_LONG).show()
+            Toast.makeText(this.requireContext(), getString(R.string.connection_error), Toast.LENGTH_LONG).show()
         }
         return root
     }

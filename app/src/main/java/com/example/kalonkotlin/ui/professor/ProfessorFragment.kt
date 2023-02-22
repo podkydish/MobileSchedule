@@ -43,6 +43,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.util.LinkedList
 import java.util.Locale
+import java.util.Objects
 import java.util.UUID
 
 
@@ -51,7 +52,7 @@ import kotlin.Comparator
 import kotlin.collections.ArrayList
 
 class ProfessorFragment : Fragment() {
-    private val weekdays = arrayOf("", "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС")
+    private lateinit var weekdays: Array<String>
     private val allProfessors: List<Professor> =
         Professor.professorRequest("SELECT*FROM public.professors")
     private var clientProfessor: Professor? = null
@@ -85,7 +86,7 @@ class ProfessorFragment : Fragment() {
         val id = item.itemId
         if (id == R.id.item1) {
             (activity as MainActivity?)
-                ?.setActionBarTitle("Препподаватель")
+                ?.setActionBarTitle(getString(R.string.title_professor))
             profInfoText.visibility = View.VISIBLE
             searchNameBtn.visibility = View.VISIBLE
             onWeekBtn.visibility = View.INVISIBLE
@@ -99,7 +100,7 @@ class ProfessorFragment : Fragment() {
             input.visibility = View.VISIBLE
             input.visibility = View.VISIBLE
             searchBtn.visibility = View.VISIBLE
-            input.hint = "Вводить сюда..."
+            input.hint = getString(R.string.input_mark)
         }
         return super.onOptionsItemSelected(item)
     }
@@ -113,28 +114,41 @@ class ProfessorFragment : Fragment() {
         _binding = FragmentProfessorBinding.inflate(inflater, container, false)
         val root: View = binding.root
         setHasOptionsMenu(true)
-        if (!Network.checkConnectivity(this.requireContext())) {
-            Toast.makeText(this.requireContext(), "Проверьте подключение к интернету", Toast.LENGTH_LONG).show()
-        }
+
+        weekdays = resources.getStringArray(R.array.weekdays)
         scheduleText = root.findViewById(R.id.scheduleText_prof)
         nextDay = root.findViewById(R.id.prof_next_btn)
         prevDay = root.findViewById(R.id.back_prof)
         todayBtn = root.findViewById(R.id.now_prof)
         onWeekBtn = root.findViewById(R.id.onWeek_prof)
-
-
         profInfoText = root.findViewById(R.id.text_professor)
-        profInfoText.text = "Введите ваше ФИО"
+        profInfoText.text = getString(R.string.name_input)
         profSpinner = root.findViewById(R.id.chooseProfSpin)
         searchNameBtn = root.findViewById(R.id.profChooseBtn)
         input = root.findViewById(R.id.editText2)
-        input.hint = "Вводить сюда..."
+        input.hint = getString(R.string.input_mark)
         searchBtn = root.findViewById(R.id.profSearchBtn)
+
+        if (!Network.checkConnectivity(this.requireContext())) {
+            Toast.makeText(this.requireContext(), getString(R.string.connection_error), Toast.LENGTH_LONG).show()
+            if (!Objects.equals(loadPref(), "")){
+                searchBtn.visibility = View.INVISIBLE
+                input.visibility = View.INVISIBLE
+                profInfoText.visibility = View.INVISIBLE
+                scheduleText.visibility = View.VISIBLE
+                scheduleText.visibility = View.VISIBLE
+                searchBtn.visibility = View.GONE
+                scheduleText.movementMethod = ScrollingMovementMethod()
+                loadOnWeek()
+                (activity as MainActivity?)
+                    ?.setActionBarTitle(loadPref().toString().split(" ")[0])
+            }
+        } else{
 
         if (loadPref() != "") {
             outputProfessors = LinkedList(allProfessors)
             (outputProfessors as LinkedList<Professor>).removeIf { prof: Professor ->
-                prof.siteId == UUID.fromString("00000000-0000-0000-0000-000000000000")
+                prof.siteId == UUID.fromString(getString(R.string.zero_patient))
             }
             for (professor in outputProfessors) {
                 if (professor.getFullName() == loadPref()) {
@@ -161,7 +175,7 @@ class ProfessorFragment : Fragment() {
                 input.visibility = View.INVISIBLE
                 professorSearch(input.text.toString().lowercase(Locale.getDefault()))
             } else {
-                input.hint = "Проверьте написание и повторите попытку"
+                input.hint = getString(R.string.input_warning)
             }
         }
         searchNameBtn.setOnClickListener {
@@ -197,6 +211,8 @@ class ProfessorFragment : Fragment() {
                 val answer = scheduleText.text.toString()
                 scheduleText.text = localText + answer
             }
+            saveOnWeek()
+        }
         }
         return root
     }
@@ -231,21 +247,21 @@ class ProfessorFragment : Fragment() {
                     " WHERE p.professor_lastname = '" + clientProfessor!!.lastname + "'" +
                     " ORDER BY lesson_day"
         )
-        savePref(clientProfessor!!.getFullName())
+        savePref(clientProfessor!!.getFullName(), SAVED_TEXT)
         searchByDate(allSchedule, date)
     }
 
     private fun professorSearch(userInputName: String) {
         outputProfessors = LinkedList(allProfessors)
         (outputProfessors as LinkedList<Professor>).removeIf { prof: Professor ->
-            prof.siteId == UUID.fromString("00000000-0000-0000-0000-000000000000")
+            prof.siteId == UUID.fromString(getString(R.string.zero_patient))
         }
         (outputProfessors as LinkedList<Professor>).sortWith { o1: Professor, o2: Professor ->
             val tmpToO1: Int = calculateDistanceBetweenStrings(o1.getFullName(), userInputName)
             val tmpToO2: Int = calculateDistanceBetweenStrings(o2.getFullName(), userInputName)
             tmpToO1.compareTo(tmpToO2)
         }
-        profInfoText.text = "Выберите из списка нужного преподавателя"
+        profInfoText.text = getString(R.string.choose_professor)
         val spinnerArray: MutableList<String> = ArrayList() //накидываем в список группы
         for (i in 0..4) {
             spinnerArray.add(outputProfessors[i].getFullName())
@@ -282,7 +298,6 @@ class ProfessorFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     fun searchByDate(allSchedule: List<Schedule>, date: LocalDate) { // поиск расписания по дате
-        println("поиск и вывод сообщения")
         val answer: StringBuilder
         val lessons: MutableList<Schedule> = ArrayList()
         for (sc in allSchedule) {
@@ -294,7 +309,7 @@ class ProfessorFragment : Fragment() {
         }
         if (lessons.size != 0) {
             answer = StringBuilder()
-            answer.append("ㅤㅤㅤㅤㅤ").append(CALENDAR_SMILE)
+            answer.append(getString(R.string.space)).append(CALENDAR_SMILE)
                 .append(date.format(DATE_FORMATTER)).append(" (")
                 .append(weekdays[date.dayOfWeek.value]).append(")")
                 .append("\n")
@@ -368,10 +383,10 @@ $NO_PAIRS
         }
     }
 
-    private fun savePref(prefValue: String?) {
+    private fun savePref(prefValue: String?, prefKey: String) {
         sPref = requireActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
         val ed = sPref.edit()
-        ed.putString(SAVED_TEXT, prefValue)
+        ed.putString(prefKey, prefValue)
         ed.apply()
     }
 
@@ -383,6 +398,25 @@ $NO_PAIRS
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+    private fun saveOnWeek(){
+        savePref(scheduleText.text.toString(), "profOnWeek")
+    }
+    private fun loadOnWeek(){
+        sPref = requireActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
+        val answer = sPref.getString("profOnWeek", "")
+        scheduleText.text = answer
+        /*val firstDayOfWeek = date.minusDays((date.dayOfWeek.value - 1).toLong())
+        var localText = ""
+        for (i in 0..6) {
+            val currentDay = firstDayOfWeek.plusDays(i.toLong())
+            if (currentDay !== firstDayOfWeek) {
+                localText = scheduleText.text.toString()
+            }
+            searchByDate(allSchedule, currentDay)
+            val answer = scheduleText.text.toString()
+            scheduleText.text = localText + answer
+        }*/
     }
 
     companion object {

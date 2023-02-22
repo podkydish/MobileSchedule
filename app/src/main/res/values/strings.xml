@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">МАИ</string>
+    <string name="app_name">МАИ 2.0</string>
     <string name="title_home">Главная</string>
     <string name="title_student">Студент</string>
     <string name="title_professor">Преподаватель</string>
@@ -10,14 +10,22 @@
     <string name="group_name">Выберите группу</string>
     <string name="choose_name">Выбрать</string>
     <string name="back_name">Назад</string>
-    <string name="guk_map">GukMap</string>
-    <string name="orsh_map">orsh_map</string>
     <string name="exit_btn">покинуть помойку</string>
     <string name="onWeek">на неделю</string>
     <string name="back">Назад</string>
     <string name="next">Дальше</string>
     <string name="now">сейчас</string>
     <string name="authors">Авторы</string>
+    <string name="group_input">Введите вашу группу</string>
+    <string name="connection_error">Проверьте подключение к интернету</string>
+    <string name="database_error">Ошибка подключения к серверу</string>
+    <string name="input_warning">Ничего не найдено, проверьте корректность данных</string>
+    <string name="space">ㅤㅤㅤㅤㅤ</string>
+    <string name="name_input">Введите ваше ФИО</string>
+    <string name="input_mark">Вводить сюда…</string>
+    <string name="choose_professor">Выберите из списка нужного преподавателя</string>
+    <string name="zero_patient">00000000-0000-0000-0000-000000000000</string>
+    <string name="hello_world">Добро пожаловать</string>
     <string-array name="course_number">
         <item>1</item>
         <item>2</item>
@@ -39,5 +47,15 @@
         <item>10</item>
         <item>11</item>
         <item>12</item>
+    </string-array>
+    <string-array name="weekdays">
+        <item></item>
+        <item>ПН</item>
+        <item>ВТ</item>
+        <item>СР</item>
+        <item>ЧТ</item>
+        <item>ПТ</item>
+        <item>СБ</item>
+        <item>ВС</item>
     </string-array>
 </resources>
