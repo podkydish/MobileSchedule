@@ -26,7 +26,7 @@ data class Lesson(var id: Int,
         }
     }
 
-    fun getNumberToTime(): String {
+    private fun getNumberToTime(): String {
         return when (number) {
             0.toShort() -> "9:00 - 10:30"
             1.toShort() -> "10:45 - 12:15"

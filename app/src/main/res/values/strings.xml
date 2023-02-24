@@ -26,6 +26,9 @@
     <string name="choose_professor">Выберите из списка нужного преподавателя</string>
     <string name="zero_patient">00000000-0000-0000-0000-000000000000</string>
     <string name="hello_world">Добро пожаловать</string>
+    <string name="dark">Тёмная</string>
+    <string name="light">Светлая</string>
+    <string name="theme">Тема</string>
     <string-array name="course_number">
         <item>1</item>
         <item>2</item>

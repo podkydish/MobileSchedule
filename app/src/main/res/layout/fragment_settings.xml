@@ -4,6 +4,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/settings_layout"
         tools:context="com.example.kalonkotlin.ui.info.SettingsFragment">
 
     <TextView
@@ -14,7 +15,10 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:visibility="invisible"
-            tools:layout_editor_absoluteX="15dp" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHorizontal_bias="0.466"
+            app:layout_constraintVertical_bias="0.41" />
 
     <Button
             android:text="@string/authors"
@@ -24,9 +28,43 @@
             android:textIsSelectable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintHorizontal_bias="0.49"
             app:layout_constraintBottom_toBottomOf="@+id/authorText"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.745" />
+
+    <TextView
+            android:text="@string/light"
+            android:layout_width="64dp"
+            android:layout_height="25dp"
+            android:id="@+id/textView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="84dp" />
+
+    <Switch
+            android:text="@string/theme"
+            android:layout_width="208dp"
+            android:layout_height="63dp"
+            android:id="@+id/theme"
+            android:textOff="@string/light"
+            android:textOn="@string/dark"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="64dp"
+            android:layout_marginStart="40dp"
+            app:showText="true"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+    <TextView
+            android:text="@string/dark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/theme"
+            android:layout_marginTop="84dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,6 +6,7 @@ plugins {
 android {
     namespace 'com.example.kalonkotlin'
     compileSdk 33
+    archivesBaseName = "MaiPorn"
 
     defaultConfig {
         applicationId "com.example.kalonkotlin"
