@@ -31,7 +31,6 @@ import com.example.kalonkotlin.client.PROFESSOR_SMILE
 import com.example.kalonkotlin.client.STUDENT_SMILE
 import com.example.kalonkotlin.client.TIME_SMILE
 import com.example.kalonkotlin.client.UNIVERSITY_SMILE
-import com.example.kalonkotlin.client.connection
 
 import com.example.kalonkotlin.client.entities.Group
 import com.example.kalonkotlin.client.entities.Schedule
@@ -42,7 +41,6 @@ import java.util.Collections
 import java.util.LinkedList
 import java.util.Objects
 import java.util.stream.Collectors
-import org.w3c.dom.Text
 
 
 class StudentFragment : Fragment(), View.OnClickListener {
@@ -111,7 +109,7 @@ class StudentFragment : Fragment(), View.OnClickListener {
 
     @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.student, menu);
+        inflater.inflate(R.menu.student, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -125,14 +123,14 @@ class StudentFragment : Fragment(), View.OnClickListener {
         val root: View = binding.root
         setHasOptionsMenu(true)
         weekdays = resources.getStringArray(R.array.weekdays)
-        chooseCourse = root.findViewById(R.id.courseNumber)
-        chooseFac = root.findViewById(R.id.facultyNumber)
-        chooseGroup = root.findViewById(R.id.group)
+        chooseCourse = binding.courseNumber
+        chooseFac = binding.facultyNumber
+        chooseGroup = binding.group
         mainText = root.findViewById(R.id.text_student)
-        courseText = root.findViewById(R.id.courseText)
-        facultyText = root.findViewById(R.id.facultyText)
-        groupText = root.findViewById(R.id.groupText)
-        chooseBtn = root.findViewById(R.id.chooseBtn)
+        courseText = binding.courseText
+        facultyText = binding.facultyText
+        groupText = binding.groupText
+        chooseBtn = binding.chooseBtn
         searchBtn = root.findViewById(R.id.stud_search_btn)
         nextButton = root.findViewById(R.id.next_day_button)
         prevButton = root.findViewById(R.id.back_prof)
@@ -200,7 +198,9 @@ class StudentFragment : Fragment(), View.OnClickListener {
         }
 
 
-        private fun searchByGroup() {
+
+
+    private fun searchByGroup() {
             //вывод в app bar выбранной группы
             (activity as MainActivity?)
                 ?.setActionBarTitle(clientGroup!!.name)
@@ -247,7 +247,7 @@ class StudentFragment : Fragment(), View.OnClickListener {
                     lessons = lessons + sc
                 }
             }
-            if (lessons.size !== 0) {
+            if (lessons.isNotEmpty()) {
                 answer = StringBuilder()
                 answer.append(getString(R.string.space)).append(CALENDAR_SMILE).append(date.format(DATE_FORMATTER)).append(" (").append(weekdays[date.dayOfWeek.value]).append(")").append("\n")
                 val lessonsForDay: List<Schedule> = lessons.stream()

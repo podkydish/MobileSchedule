@@ -63,7 +63,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editText2"
             app:layout_constraintVertical_bias="0.349"
-            app:cornerRadius="60dp" />
+            app:cornerRadius="60dp"
+            android:visibility="visible" />
 
     <Spinner
             android:layout_width="409dp"
@@ -78,7 +79,7 @@
             android:visibility="invisible" />
 
     <Button
-            android:text="@string/stud_search_btn"
+            android:text="Выбрать"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/profChooseBtn"

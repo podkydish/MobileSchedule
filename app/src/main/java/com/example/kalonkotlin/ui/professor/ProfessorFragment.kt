@@ -77,7 +77,7 @@ class ProfessorFragment : Fragment() {
 
     @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.professor, menu);
+        inflater.inflate(R.menu.professor, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -116,18 +116,18 @@ class ProfessorFragment : Fragment() {
         setHasOptionsMenu(true)
 
         weekdays = resources.getStringArray(R.array.weekdays)
-        scheduleText = root.findViewById(R.id.scheduleText_prof)
+        scheduleText =  root.findViewById(R.id.scheduleText_prof)
         nextDay = root.findViewById(R.id.prof_next_btn)
         prevDay = root.findViewById(R.id.back_prof)
         todayBtn = root.findViewById(R.id.now_prof)
         onWeekBtn = root.findViewById(R.id.onWeek_prof)
         profInfoText = root.findViewById(R.id.text_professor)
         profInfoText.text = getString(R.string.name_input)
-        profSpinner = root.findViewById(R.id.chooseProfSpin)
-        searchNameBtn = root.findViewById(R.id.profChooseBtn)
-        input = root.findViewById(R.id.editText2)
+        profSpinner = binding.chooseProfSpin
+        searchNameBtn = binding.profChooseBtn
+        input = binding.editText2
         input.hint = getString(R.string.input_mark)
-        searchBtn = root.findViewById(R.id.profSearchBtn)
+        searchBtn = binding.profSearchBtn
 
         if (!Network.checkConnectivity(this.requireContext())) {
             Toast.makeText(this.requireContext(), getString(R.string.connection_error), Toast.LENGTH_LONG).show()
@@ -157,15 +157,9 @@ class ProfessorFragment : Fragment() {
                 }
             }
         }
-
-        searchBtn.visibility = View.INVISIBLE
-        input.visibility = View.INVISIBLE
-        searchBtn.visibility = View.GONE
-        searchBtn.isClickable = false
         if (clientProfessor != null) {
             searchByProf()
         }
-
         searchBtn.setOnClickListener {
             if (input.text.toString().split(" ".toRegex()).dropLastWhile { it.isEmpty() }
                     .toTypedArray().size < 5) { // Считывание ФИО преподавателя

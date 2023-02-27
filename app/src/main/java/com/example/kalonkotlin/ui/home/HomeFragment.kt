@@ -34,8 +34,13 @@ class HomeFragment : Fragment() {
         maiNews = binding.webview
         maiNews!!.settings.javaScriptEnabled = true
         maiNews!!.loadUrl(("javascript:(function() { " +
-                "document.getElementsByTagName('col-lg-8 me-auto mb-7 mb-lg-0')[0].style.display=\"none\"; " +
-                "})()"))
+                "document.getElementsByTagName('row gx-3 pt-1')[0].style.display=\"none\"; " +
+                "}" +
+                "document.body.style.backgroundColor = 'black';"  +
+                "var ele = document.getElementsByClassName('mb-3');\n" +
+                "for (var i = 0; i < ele.length; i++ ) {\n" +
+                "    ele[i].style.color = \"white\";\n" +
+                "} )()"))
         maiNews?.loadUrl(MAI_URL)
         val textView: TextView = binding.textHome
         textView.text = getString(R.string.hello_world)

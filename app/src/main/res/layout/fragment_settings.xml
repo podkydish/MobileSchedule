@@ -37,7 +37,7 @@
             android:text="@string/light"
             android:layout_width="64dp"
             android:layout_height="25dp"
-            android:id="@+id/textView"
+            android:id="@+id/light"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginStart="140dp"
@@ -61,7 +61,7 @@
             android:text="@string/dark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView2"
+            android:id="@+id/dark"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@+id/theme"
             android:layout_marginTop="84dp" />

@@ -13,7 +13,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.CompoundButton
 import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
@@ -36,6 +35,8 @@ class SettingsFragment : Fragment(), View.OnClickListener {
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
     private lateinit var sPref: SharedPreferences
+    private lateinit var dark: TextView
+    private lateinit var light: TextView
 
 
     @Deprecated("Deprecated in Java")
@@ -52,7 +53,7 @@ class SettingsFragment : Fragment(), View.OnClickListener {
 
     @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.settings, menu);
+        inflater.inflate(R.menu.settings, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -67,6 +68,8 @@ class SettingsFragment : Fragment(), View.OnClickListener {
         setHasOptionsMenu(true)
         theme = binding.theme
         layout = binding.settingsLayout
+        dark = binding.dark
+        light = binding.light
         authorText = binding.authorText
         authorButton = binding.authorBtn
         authorButton.setOnClickListener(this)
@@ -98,6 +101,9 @@ class SettingsFragment : Fragment(), View.OnClickListener {
     override fun onClick(p0: View?) {
         when (p0) {
             binding.authorBtn -> {
+                theme.visibility = View.INVISIBLE
+                dark.visibility = View.INVISIBLE
+                light.visibility = View.INVISIBLE
                 authorText.visibility = View.VISIBLE
                 authorButton.visibility = View.INVISIBLE
                 authorText.movementMethod = LinkMovementMethod.getInstance()
