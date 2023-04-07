@@ -81,7 +81,8 @@
             android:layout_marginBottom="8dp"
             android:text="@string/course_name"
             app:layout_constraintBottom_toTopOf="@+id/courseNumber"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            android:textColor="@color/black" />
 
     <TextView
             android:id="@+id/facultyText"
@@ -92,7 +93,8 @@
             app:layout_constraintBottom_toTopOf="@+id/facultyNumber"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.746"
-            app:layout_constraintStart_toEndOf="@+id/courseText" />
+            app:layout_constraintStart_toEndOf="@+id/courseText"
+            android:textColor="@color/black" />
 
     <TextView
             android:id="@+id/groupText"
@@ -105,7 +107,8 @@
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text_student"
-            app:layout_constraintVertical_bias="0.772" />
+            app:layout_constraintVertical_bias="0.772"
+            android:textColor="@color/black" />
 
     <TextView
             android:layout_width="411dp"
@@ -116,7 +119,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintBottom_toTopOf="@+id/next_day_button" />
+            app:layout_constraintBottom_toTopOf="@+id/next_day_button"
+            android:textColor="@color/black" />
 
     <Spinner
             android:id="@+id/courseNumber"

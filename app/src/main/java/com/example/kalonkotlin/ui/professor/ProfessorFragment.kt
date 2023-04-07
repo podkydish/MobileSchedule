@@ -27,12 +27,14 @@ import com.example.kalonkotlin.client.ARRAY_REGEX
 import com.example.kalonkotlin.client.BOOKS_SMILE
 import com.example.kalonkotlin.client.CALENDAR_SMILE
 import com.example.kalonkotlin.client.DATE_FORMATTER
+import com.example.kalonkotlin.client.Database
 import com.example.kalonkotlin.client.NO_PAIRS
 import com.example.kalonkotlin.client.Network
 import com.example.kalonkotlin.client.PROFESSOR_SMILE
 import com.example.kalonkotlin.client.STUDENT_SMILE
 import com.example.kalonkotlin.client.TIME_SMILE
 import com.example.kalonkotlin.client.UNIVERSITY_SMILE
+import com.example.kalonkotlin.client.Logging
 
 
 import com.example.kalonkotlin.client.entities.Professor
@@ -43,7 +45,6 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.util.LinkedList
 import java.util.Locale
-import java.util.Objects
 import java.util.UUID
 
 
@@ -53,8 +54,7 @@ import kotlin.collections.ArrayList
 
 class ProfessorFragment : Fragment() {
     private lateinit var weekdays: Array<String>
-    private val allProfessors: List<Professor> =
-        Professor.professorRequest("SELECT*FROM public.professors")
+    private lateinit var allProfessors: List<Professor>
     private var clientProfessor: Professor? = null
     private var outputProfessors: List<Professor> = LinkedList()
     private lateinit var profInfoText: TextView
@@ -71,6 +71,7 @@ class ProfessorFragment : Fragment() {
     private lateinit var sPref: SharedPreferences
     private lateinit var input: EditText
     private var _binding: FragmentProfessorBinding? = null
+    private lateinit var db: Database
 
     private val binding get() = _binding!!
 
@@ -113,10 +114,12 @@ class ProfessorFragment : Fragment() {
     ): View {
         _binding = FragmentProfessorBinding.inflate(inflater, container, false)
         val root: View = binding.root
+        val context = requireContext()
+        Logging.logTo(context,"Come in professor")
         setHasOptionsMenu(true)
-
+        db = Database(context)
         weekdays = resources.getStringArray(R.array.weekdays)
-        scheduleText =  root.findViewById(R.id.scheduleText_prof)
+        scheduleText = root.findViewById(R.id.scheduleText_prof)
         nextDay = root.findViewById(R.id.prof_next_btn)
         prevDay = root.findViewById(R.id.back_prof)
         todayBtn = root.findViewById(R.id.now_prof)
@@ -129,55 +132,65 @@ class ProfessorFragment : Fragment() {
         input.hint = getString(R.string.input_mark)
         searchBtn = binding.profSearchBtn
 
-        if (!Network.checkConnectivity(this.requireContext())) {
-            Toast.makeText(this.requireContext(), getString(R.string.connection_error), Toast.LENGTH_LONG).show()
-            if (!Objects.equals(loadPref(), "")){
-                searchBtn.visibility = View.INVISIBLE
-                input.visibility = View.INVISIBLE
-                profInfoText.visibility = View.INVISIBLE
-                scheduleText.visibility = View.VISIBLE
-                scheduleText.visibility = View.VISIBLE
-                searchBtn.visibility = View.GONE
-                scheduleText.movementMethod = ScrollingMovementMethod()
-                loadOnWeek()
-                (activity as MainActivity?)
-                    ?.setActionBarTitle(loadPref().toString().split(" ")[0])
-            }
-        } else{
 
-        if (loadPref() != "") {
-            outputProfessors = LinkedList(allProfessors)
-            (outputProfessors as LinkedList<Professor>).removeIf { prof: Professor ->
-                prof.siteId == UUID.fromString(getString(R.string.zero_patient))
-            }
-            for (professor in outputProfessors) {
-                if (professor.getFullName() == loadPref()) {
-                    clientProfessor = professor
-                    break
+        if (!Network.checkConnectivity(context)) {
+            Logging.logTo(context,"internet is not available")
+            Toast.makeText(context, getString(R.string.connection_error), Toast.LENGTH_LONG).show()
+            searchBtn.visibility = View.INVISIBLE
+            input.visibility = View.INVISIBLE
+            profInfoText.visibility = View.INVISIBLE
+            scheduleText.visibility = View.VISIBLE
+            searchBtn.visibility = View.GONE
+            scheduleText.movementMethod = ScrollingMovementMethod()
+            onWeekBtn.visibility = View.VISIBLE
+            todayBtn.visibility = View.VISIBLE
+            prevDay.visibility = View.VISIBLE
+            nextDay.visibility = View.VISIBLE
+            onWeekBtn.isClickable = true
+            todayBtn.isClickable = true
+            prevDay.isClickable = true
+            nextDay.isClickable = true
+
+
+            (activity as MainActivity?)
+                ?.setActionBarTitle(loadPref().toString().split(" ")[0])
+            allSchedule = db.getProfessorSchedule()
+            searchByDate(allSchedule, date)
+        } else {
+            Logging.logTo(context,"internet is available")
+            allProfessors = Professor.professorRequest("SELECT*FROM public.professors")
+            if (loadPref() != "") {
+                outputProfessors = LinkedList(allProfessors)
+                (outputProfessors as LinkedList<Professor>).removeIf { prof: Professor ->
+                    prof.siteId == UUID.fromString(getString(R.string.zero_patient))
+                }
+                for (professor in outputProfessors) {
+                    if (professor.getFullName() == loadPref()) {
+                        clientProfessor = professor
+                        break
+                    }
                 }
             }
-        }
-        if (clientProfessor != null) {
-            searchByProf()
-        }
-        searchBtn.setOnClickListener {
-            if (input.text.toString().split(" ".toRegex()).dropLastWhile { it.isEmpty() }
-                    .toTypedArray().size < 5) { // Считывание ФИО преподавателя
-                profSpinner.visibility = View.VISIBLE
-                searchNameBtn.visibility = View.VISIBLE
-                searchBtn.visibility = View.INVISIBLE
-                input.visibility = View.INVISIBLE
-                professorSearch(input.text.toString().lowercase(Locale.getDefault()))
-            } else {
-                input.hint = getString(R.string.input_warning)
+            if (clientProfessor != null) {
+                searchByProf()
+            }
+            searchBtn.setOnClickListener {
+                if (input.text.toString().split(" ".toRegex()).dropLastWhile { it.isEmpty() }
+                        .toTypedArray().size < 5) { // Считывание ФИО преподавателя
+                    profSpinner.visibility = View.VISIBLE
+                    searchNameBtn.visibility = View.VISIBLE
+                    searchBtn.visibility = View.INVISIBLE
+                    input.visibility = View.INVISIBLE
+                    professorSearch(input.text.toString().lowercase(Locale.getDefault()))
+                } else {
+                    input.hint = getString(R.string.input_warning)
+                }
+            }
+            searchNameBtn.setOnClickListener {
+                clientProfessor = outputProfessors[profSpinner.selectedItemPosition]
+                searchByProf()
             }
         }
-        searchNameBtn.setOnClickListener {
-
-            clientProfessor = outputProfessors[profSpinner.selectedItemPosition]
-            searchByProf()
-        }
-
         nextDay.setOnClickListener {
             date = date.plusDays(1)
             searchByDate(allSchedule, date)
@@ -205,8 +218,6 @@ class ProfessorFragment : Fragment() {
                 val answer = scheduleText.text.toString()
                 scheduleText.text = localText + answer
             }
-            saveOnWeek()
-        }
         }
         return root
     }
@@ -214,6 +225,9 @@ class ProfessorFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun searchByProf() {
+        Logging.logTo(requireContext(),"professor $clientProfessor")
+        db.deleteProfessorData()
+        db.insertProfessorData(clientProfessor!!)
         if (clientProfessor!!.lastname == "Коновалов") {
             (activity as MainActivity?)
                 ?.setActionBarTitle("Коновалыч")
@@ -221,6 +235,8 @@ class ProfessorFragment : Fragment() {
             (activity as MainActivity?)
                 ?.setActionBarTitle(clientProfessor!!.lastname)
         }
+        input.visibility = View.INVISIBLE
+        searchBtn.visibility = View.INVISIBLE
         profInfoText.visibility = View.INVISIBLE
         profSpinner.visibility = View.INVISIBLE
         searchNameBtn.visibility = View.INVISIBLE
@@ -378,6 +394,7 @@ $NO_PAIRS
     }
 
     private fun savePref(prefValue: String?, prefKey: String) {
+        Logging.logTo(requireContext(),"chosen professor is saved")
         sPref = requireActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
         val ed = sPref.edit()
         ed.putString(prefKey, prefValue)
@@ -386,6 +403,7 @@ $NO_PAIRS
 
     private fun loadPref(): String? {
         sPref = requireActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
+        Logging.logTo(requireContext(),"saved professor is loaded")
         return sPref.getString(SAVED_TEXT, "")
     }
 
@@ -393,29 +411,27 @@ $NO_PAIRS
         super.onDestroyView()
         _binding = null
     }
-    private fun saveOnWeek(){
-        savePref(scheduleText.text.toString(), "profOnWeek")
-    }
-    private fun loadOnWeek(){
-        sPref = requireActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
-        val answer = sPref.getString("profOnWeek", "")
-        scheduleText.text = answer
-        /*val firstDayOfWeek = date.minusDays((date.dayOfWeek.value - 1).toLong())
-        var localText = ""
-        for (i in 0..6) {
-            val currentDay = firstDayOfWeek.plusDays(i.toLong())
-            if (currentDay !== firstDayOfWeek) {
-                localText = scheduleText.text.toString()
-            }
-            searchByDate(allSchedule, currentDay)
-            val answer = scheduleText.text.toString()
-            scheduleText.text = localText + answer
-        }*/
-    }
 
     companion object {
         private const val SAVED_TEXT = "client_professor"
     }
 }
+
+//TODO something like that
+/*override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    // Inflate the menu; this adds items to the action bar if it is present.
+    menuInflater.inflate(R.menu.menu_main, menu)
+    return true
+}
+
+override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    // Handle action bar item clicks here. The action bar will
+    // automatically handle clicks on the Home/Up button, so long
+    // as you specify a parent activity in AndroidManifest.xml.
+    return when (item.itemId) {
+        R.id.action_settings -> true
+        else -> super.onOptionsItemSelected(item)
+    }
+}*/
 
 
