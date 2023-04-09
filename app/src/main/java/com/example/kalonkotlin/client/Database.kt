@@ -4,14 +4,12 @@ package com.example.kalonkotlin.client
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.kalonkotlin.client.entities.Group
 import com.example.kalonkotlin.client.entities.Professor
 import com.example.kalonkotlin.client.entities.Schedule
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.LinkedList
 
 class Database(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -32,15 +30,15 @@ class Database(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
     }
 
     override fun onCreate(db: SQLiteDatabase) {
-        val CREATE_TABLE = "CREATE TABLE IF NOT EXISTS $PROFESSOR_TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY, $COLUMN_GROUP_NAME TEXT, $COLUMN_DAY DATE, $COLUMN_LESSON_NAME TEXT, $COLUMN_PROFESSOR TEXT, $COLUMN_LESSON_NUMBER INTEGER, $COLUMN_LESSON_TYPE INTEGER, $COLUMN_ROOMS TEXT)"
-        db.execSQL(CREATE_TABLE)
-        val CREATE_STUDENT_TABLE = "CREATE TABLE IF NOT EXISTS $STUDENT_TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY, $COLUMN_GROUP_NAME TEXT, $COLUMN_DAY DATE, $COLUMN_LESSON_NAME TEXT, $COLUMN_PROFESSOR TEXT, $COLUMN_LESSON_NUMBER INTEGER, $COLUMN_LESSON_TYPE INTEGER, $COLUMN_ROOMS TEXT)"
-        db.execSQL(CREATE_STUDENT_TABLE)
+        val createTable = "CREATE TABLE IF NOT EXISTS $PROFESSOR_TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY, $COLUMN_GROUP_NAME TEXT, $COLUMN_DAY DATE, $COLUMN_LESSON_NAME TEXT, $COLUMN_PROFESSOR TEXT, $COLUMN_LESSON_NUMBER INTEGER, $COLUMN_LESSON_TYPE INTEGER, $COLUMN_ROOMS TEXT)"
+        db.execSQL(createTable)
+        val createStudentTable = "CREATE TABLE IF NOT EXISTS $STUDENT_TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY, $COLUMN_GROUP_NAME TEXT, $COLUMN_DAY DATE, $COLUMN_LESSON_NAME TEXT, $COLUMN_PROFESSOR TEXT, $COLUMN_LESSON_NUMBER INTEGER, $COLUMN_LESSON_TYPE INTEGER, $COLUMN_ROOMS TEXT)"
+        db.execSQL(createStudentTable)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        val DROP_TABLE = "DROP TABLE IF EXISTS $PROFESSOR_TABLE_NAME"
-        db.execSQL(DROP_TABLE)
+        val dropTable = "DROP TABLE IF EXISTS $PROFESSOR_TABLE_NAME"
+        db.execSQL(dropTable)
         onCreate(db)
     }
 
@@ -54,7 +52,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
                     " INNER JOIN public.lesson_rooms AS lr ON lr.room_id = l.lesson_id" +
                     " INNER JOIN public.lessons_professors AS lp ON lp.lesson_id = l.lesson_id" +
                     " INNER JOIN public.professors AS p ON p.professor_id = lp.professor_id" +
-                    " WHERE p.professor_lastname = '" + clientProfessor!!.lastname + "'" +
+                    " WHERE p.professor_lastname = '" + clientProfessor.lastname + "'" +
                     " ORDER BY lesson_day"
         )
         val sdf = SimpleDateFormat("yyyy-MM-dd")
@@ -100,7 +98,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
 
     }
 
-    @SuppressLint("Range")
+    @SuppressLint("Range", "Recycle")
     fun getProfessorSchedule(): List<Schedule> {
         val allSchedule: MutableList<Schedule> = LinkedList()
         val cursor = readableDatabase.rawQuery("SELECT * FROM $PROFESSOR_TABLE_NAME", null)
@@ -117,22 +115,21 @@ class Database(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         return allSchedule
     }
 
-    @SuppressLint("Range")
+    @SuppressLint("Range", "Recycle")
     fun getStudentSchedule(): List<Schedule> {
+        val sdf = SimpleDateFormat("yyyy-MM-dd")
         val allSchedule: MutableList<Schedule> = LinkedList()
         val cursor = readableDatabase.rawQuery("SELECT * FROM $STUDENT_TABLE_NAME", null)
-        do {
-            val oneDay = Schedule(cursor.getString(cursor.getColumnIndex(COLUMN_GROUP_NAME)), Date(cursor.getString(cursor.getColumnIndex(COLUMN_DAY))),
-                cursor.getString(cursor.getColumnIndex(COLUMN_LESSON_NAME)), cursor.getString(cursor.getColumnIndex(COLUMN_PROFESSOR)),
-                cursor.getString(cursor.getColumnIndex(COLUMN_ROOMS)), Integer.valueOf(cursor.getString(cursor.getColumnIndex(COLUMN_LESSON_NUMBER))),
-                Integer.valueOf(cursor.getString(cursor.getColumnIndex(COLUMN_LESSON_TYPE))))
-            allSchedule += oneDay
-        } while (cursor.moveToNext())
+        if (cursor.moveToFirst()) {
+            do {
+                val oneDay = Schedule(cursor.getString(cursor.getColumnIndex(COLUMN_GROUP_NAME)), sdf.parse(cursor.getString(cursor.getColumnIndex(COLUMN_DAY)))!!,
+                    cursor.getString(cursor.getColumnIndex(COLUMN_LESSON_NAME)), cursor.getString(cursor.getColumnIndex(COLUMN_PROFESSOR)),
+                    cursor.getString(cursor.getColumnIndex(COLUMN_ROOMS)), Integer.valueOf(cursor.getString(cursor.getColumnIndex(COLUMN_LESSON_NUMBER))),
+                    Integer.valueOf(cursor.getString(cursor.getColumnIndex(COLUMN_LESSON_TYPE))))
+                allSchedule += oneDay
+            } while (cursor.moveToNext())
+        }
         return allSchedule
-    }
-
-    fun getAllData(): Cursor {
-        return readableDatabase.rawQuery("SELECT * FROM $PROFESSOR_TABLE_NAME", null)
     }
 
     fun deleteProfessorData() {

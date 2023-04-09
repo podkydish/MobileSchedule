@@ -36,12 +36,15 @@ class HomeFragment : Fragment() {
         maiNews!!.loadUrl(("javascript:(function() { " +
                 "document.getElementsByTagName('row gx-3 pt-1')[0].style.display=\"none\"; " +
                 "}" +
-                "document.body.style.backgroundColor = 'black';"  +
+                "document.body.style.backgroundColor = 'black';" +
                 "var ele = document.getElementsByClassName('mb-3');\n" +
                 "for (var i = 0; i < ele.length; i++ ) {\n" +
                 "    ele[i].style.color = \"white\";\n" +
                 "} )()"))
         maiNews?.loadUrl(MAI_URL)
+        if (!Network.checkConnectivity(requireContext())) {
+            maiNews!!.visibility = View.INVISIBLE
+        }
         val textView: TextView = binding.textHome
         textView.text = getString(R.string.hello_world)
         if (!Network.checkConnectivity(this.requireContext())) {

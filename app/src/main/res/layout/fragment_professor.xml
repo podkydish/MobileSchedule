@@ -20,11 +20,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.265"
-            android:fontFamily="sans-serif-black" />
+            android:fontFamily="sans-serif-black"
+            android:textColor="?android:textColorPrimary" />
 
     <TextView
-            android:layout_width="415dp"
-            android:layout_height="620dp"
+            android:layout_width="408dp"
+            android:layout_height="579dp"
             android:id="@+id/scheduleText_prof"
             android:visibility="invisible"
             android:scrollbars="vertical"
@@ -34,7 +35,8 @@
             app:layout_constraintBottom_toTopOf="@+id/now_prof"
             app:layout_constraintHorizontal_bias="0.47"
             app:layout_constraintVertical_bias="1.0"
-            android:textColor="@color/black" />
+            android:textColor="?android:textColorPrimary"
+            android:layout_marginTop="50dp" />
 
     <EditText
             android:id="@+id/editText2"
@@ -51,7 +53,8 @@
             app:layout_constraintTop_toBottomOf="@+id/text_professor"
             app:layout_constraintVertical_bias="0.545"
             tools:ignore="LabelFor,SpeakableTextPresentCheck"
-            android:visibility="visible" />
+            android:visibility="visible"
+            android:textColor="?android:textColorPrimary" />
 
     <Button
             android:id="@+id/profSearchBtn"

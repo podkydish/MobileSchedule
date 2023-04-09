@@ -3,7 +3,8 @@ package com.example.kalonkotlin.client
 import android.content.Context
 import android.util.Log
 import java.io.IOException
-object Logging{
+
+object Logging {
 
     fun writeToFile(context: Context, filename: String, text: String) {
         try {

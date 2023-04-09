@@ -41,7 +41,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginStart="140dp"
-            android:layout_marginTop="84dp" />
+            android:layout_marginTop="84dp"
+            android:textColor="?android:textColorPrimary" />
 
     <Switch
             android:text="@string/theme"
@@ -55,7 +56,8 @@
             android:layout_marginTop="64dp"
             android:layout_marginStart="40dp"
             app:showText="true"
-            tools:ignore="UseSwitchCompatOrMaterialXml" />
+            tools:ignore="UseSwitchCompatOrMaterialXml"
+            android:textColor="?android:textColorPrimary" />
 
     <TextView
             android:text="@string/dark"
@@ -64,7 +66,8 @@
             android:id="@+id/dark"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@+id/theme"
-            android:layout_marginTop="84dp" />
+            android:layout_marginTop="84dp"
+            android:textColor="?android:textColorPrimary" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

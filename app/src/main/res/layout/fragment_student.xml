@@ -71,7 +71,8 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.173" />
+            app:layout_constraintVertical_bias="0.173"
+            android:textColor="?android:textColorPrimary" />
 
     <TextView
             android:id="@+id/courseText"
@@ -82,7 +83,7 @@
             android:text="@string/course_name"
             app:layout_constraintBottom_toTopOf="@+id/courseNumber"
             app:layout_constraintStart_toStartOf="parent"
-            android:textColor="@color/black" />
+            android:textColor="?android:textColorPrimary" />
 
     <TextView
             android:id="@+id/facultyText"
@@ -94,7 +95,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.746"
             app:layout_constraintStart_toEndOf="@+id/courseText"
-            android:textColor="@color/black" />
+            android:textColor="?android:textColorPrimary" />
 
     <TextView
             android:id="@+id/groupText"
@@ -108,11 +109,11 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text_student"
             app:layout_constraintVertical_bias="0.772"
-            android:textColor="@color/black" />
+            android:textColor="?android:textColorPrimary" />
 
     <TextView
             android:layout_width="411dp"
-            android:layout_height="621dp"
+            android:layout_height="574dp"
             android:id="@+id/scheduleText_prof"
             android:visibility="invisible"
             android:scrollbars="vertical"
@@ -120,7 +121,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintBottom_toTopOf="@+id/next_day_button"
-            android:textColor="@color/black" />
+            android:textColor="?android:textColorPrimary" />
 
     <Spinner
             android:id="@+id/courseNumber"

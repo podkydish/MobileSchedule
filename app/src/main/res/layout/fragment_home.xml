@@ -21,7 +21,8 @@
             app:layout_constraintTop_toTopOf="parent"
             android:fontFamily="sans-serif"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintVertical_bias="0.653" />
+            app:layout_constraintVertical_bias="0.653"
+            android:textColor="?android:textColorPrimary" />
 
     <WebView
             android:layout_width="409dp"

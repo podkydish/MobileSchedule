@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -115,7 +116,7 @@ class ProfessorFragment : Fragment() {
         _binding = FragmentProfessorBinding.inflate(inflater, container, false)
         val root: View = binding.root
         val context = requireContext()
-        Logging.logTo(context,"Come in professor")
+        Logging.logTo(context, "Come in professor")
         setHasOptionsMenu(true)
         db = Database(context)
         weekdays = resources.getStringArray(R.array.weekdays)
@@ -126,6 +127,7 @@ class ProfessorFragment : Fragment() {
         onWeekBtn = root.findViewById(R.id.onWeek_prof)
         profInfoText = root.findViewById(R.id.text_professor)
         profInfoText.text = getString(R.string.name_input)
+        scheduleText.movementMethod = ScrollingMovementMethod()
         profSpinner = binding.chooseProfSpin
         searchNameBtn = binding.profChooseBtn
         input = binding.editText2
@@ -134,7 +136,7 @@ class ProfessorFragment : Fragment() {
 
 
         if (!Network.checkConnectivity(context)) {
-            Logging.logTo(context,"internet is not available")
+            Logging.logTo(context, "internet is not available")
             Toast.makeText(context, getString(R.string.connection_error), Toast.LENGTH_LONG).show()
             searchBtn.visibility = View.INVISIBLE
             input.visibility = View.INVISIBLE
@@ -150,14 +152,14 @@ class ProfessorFragment : Fragment() {
             todayBtn.isClickable = true
             prevDay.isClickable = true
             nextDay.isClickable = true
-
+            setHasOptionsMenu(false)
 
             (activity as MainActivity?)
                 ?.setActionBarTitle(loadPref().toString().split(" ")[0])
             allSchedule = db.getProfessorSchedule()
             searchByDate(allSchedule, date)
         } else {
-            Logging.logTo(context,"internet is available")
+            Logging.logTo(context, "internet is available")
             allProfessors = Professor.professorRequest("SELECT*FROM public.professors")
             if (loadPref() != "") {
                 outputProfessors = LinkedList(allProfessors)
@@ -225,7 +227,7 @@ class ProfessorFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun searchByProf() {
-        Logging.logTo(requireContext(),"professor $clientProfessor")
+        Logging.logTo(requireContext(), "professor $clientProfessor")
         db.deleteProfessorData()
         db.insertProfessorData(clientProfessor!!)
         if (clientProfessor!!.lastname == "Коновалов") {
@@ -257,7 +259,7 @@ class ProfessorFragment : Fragment() {
                     " WHERE p.professor_lastname = '" + clientProfessor!!.lastname + "'" +
                     " ORDER BY lesson_day"
         )
-        savePref(clientProfessor!!.getFullName(), SAVED_TEXT)
+        savePref(clientProfessor!!.getFullName())
         searchByDate(allSchedule, date)
     }
 
@@ -298,7 +300,7 @@ class ProfessorFragment : Fragment() {
         var dist = 0
         val distance: LevenshteinDistance = LevenshteinDistance.getDefaultInstance()
         if (spl1.size != spl2.size) {
-            //Log.warn("arrays length isn't equal");
+            Logging.logTo(requireContext(),"arrays length isn't equal")
         }
         for (i in 0 until spl1.size.coerceAtMost(spl2.size)) {
             dist += distance.apply(spl1[i], spl2[i])
@@ -393,17 +395,17 @@ $NO_PAIRS
         }
     }
 
-    private fun savePref(prefValue: String?, prefKey: String) {
-        Logging.logTo(requireContext(),"chosen professor is saved")
+    private fun savePref(prefValue: String?) {
+        Logging.logTo(requireContext(), "chosen professor is saved")
         sPref = requireActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
         val ed = sPref.edit()
-        ed.putString(prefKey, prefValue)
+        ed.putString(SAVED_TEXT, prefValue)
         ed.apply()
     }
 
     private fun loadPref(): String? {
         sPref = requireActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
-        Logging.logTo(requireContext(),"saved professor is loaded")
+        Logging.logTo(requireContext(), "saved professor is loaded")
         return sPref.getString(SAVED_TEXT, "")
     }
 
