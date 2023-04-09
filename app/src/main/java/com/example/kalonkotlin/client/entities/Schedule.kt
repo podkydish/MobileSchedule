@@ -1,9 +1,15 @@
 package com.example.kalonkotlin.client.entities
 
-import com.example.kalonkotlin.client.*
+
+import com.example.kalonkotlin.client.connection
+import com.example.kalonkotlin.client.pass
+import com.example.kalonkotlin.client.status
+import com.example.kalonkotlin.client.url
+import com.example.kalonkotlin.client.user
 import java.sql.DriverManager
 import java.sql.ResultSet
-import java.util.*
+import java.util.Date
+
 
 data class Schedule(
     var group_name: String,
@@ -68,24 +74,24 @@ data class Schedule(
 
     fun getNumberToTime(): String {
         return when (this.lesson_number) {
-            0 -> "9:00 - 10:30";
-            1 -> "10:45 - 12:15";
-            2 -> "13:00 - 14:30";
-            3 -> "14:45 - 16:15";
-            4 -> "16:30 - 18:00";
-            5 -> "18:15 - 19:45";
-            6 -> "20:00 - 21:30";
-            7 -> "21:45 - 23:15";
-            else -> "не найдено";
+            0 -> "9:00 - 10:30"
+            1 -> "10:45 - 12:15"
+            2 -> "13:00 - 14:30"
+            3 -> "14:45 - 16:15"
+            4 -> "16:30 - 18:00"
+            5 -> "18:15 - 19:45"
+            6 -> "20:00 - 21:30"
+            7 -> "21:45 - 23:15"
+            else -> "не найдено"
         }
     }
 
     fun getLessonType(): String {
         return when (this.lesson_type) {
-            1 -> "Лекция";
-            2 -> "Практика";
-            3 -> "Лабораторная";
-            else -> "";
+            1 -> "Лекция"
+            2 -> "Практика"
+            3 -> "Лабораторная"
+            else -> ""
         }
     }
 

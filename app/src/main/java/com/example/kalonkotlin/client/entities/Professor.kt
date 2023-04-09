@@ -7,7 +7,9 @@ import com.example.kalonkotlin.client.url
 import com.example.kalonkotlin.client.user
 import com.example.kalonkotlin.client.pass
 import java.sql.ResultSet
-import java.util.*
+import java.util.TreeSet
+import java.util.UUID
+
 
 data class Professor(
     var id: Int,
