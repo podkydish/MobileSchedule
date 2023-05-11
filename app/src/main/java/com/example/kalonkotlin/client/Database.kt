@@ -10,15 +10,17 @@ import com.example.kalonkotlin.client.entities.Group
 import com.example.kalonkotlin.client.entities.Professor
 import com.example.kalonkotlin.client.entities.Schedule
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.LinkedList
 
 class Database(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
-
     companion object {
         private const val DATABASE_NAME = "my_database"
         private const val DATABASE_VERSION = 1
         private const val PROFESSOR_TABLE_NAME = "professor_lessons"
         private const val STUDENT_TABLE_NAME = "student_lessons"
+        private const val NOTES_TABLE_NAME = "notes"
         private const val COLUMN_ID = "id"
         const val COLUMN_GROUP_NAME = "group_name"
         const val COLUMN_DAY = "lesson_day"
@@ -27,6 +29,8 @@ class Database(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         const val COLUMN_LESSON_NUMBER = "lesson_number"
         const val COLUMN_LESSON_TYPE = "lesson_type"
         const val COLUMN_ROOMS = "rooms"
+        const val COLUMN_TYPE = "type"
+        const val INFORMATION = "information"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -34,6 +38,8 @@ class Database(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         db.execSQL(createTable)
         val createStudentTable = "CREATE TABLE IF NOT EXISTS $STUDENT_TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY, $COLUMN_GROUP_NAME TEXT, $COLUMN_DAY DATE, $COLUMN_LESSON_NAME TEXT, $COLUMN_PROFESSOR TEXT, $COLUMN_LESSON_NUMBER INTEGER, $COLUMN_LESSON_TYPE INTEGER, $COLUMN_ROOMS TEXT)"
         db.execSQL(createStudentTable)
+        val createNotesTable = "CREATE TABLE IF NOT EXISTS $NOTES_TABLE_NAME($COLUMN_ID INTEGER PRIMARY KEY, $COLUMN_DAY TEXT, $COLUMN_TYPE TEXT, $INFORMATION TEXT)"
+        db.execSQL(createNotesTable)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -98,7 +104,34 @@ class Database(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
 
     }
 
-    @SuppressLint("Range", "Recycle")
+    @SuppressLint("SimpleDateFormat")
+    fun insertNotes(date: LocalDate, name: String, text: String) {
+        val sdf = SimpleDateFormat("yyyy-MM-dd")
+        val insdate: String
+        insdate = date.format(DATE_FORMATTER)
+        val values = ContentValues()
+        values.put(COLUMN_TYPE, name)
+        values.put(COLUMN_DAY, insdate)
+        values.put(INFORMATION, text)
+        writableDatabase.insert(NOTES_TABLE_NAME, null, values)
+    }
+
+    @SuppressLint("Range", "Recycle", "SimpleDateFormat")
+    fun getNotes(date: LocalDate, name: String): List<String> {
+        val allNotes: MutableList<String> = LinkedList()
+        val searchingDate: String = date.format(DATE_FORMATTER)
+        val cursor = readableDatabase.rawQuery("SELECT * FROM $NOTES_TABLE_NAME WHERE $COLUMN_DAY = \"$searchingDate\" AND $COLUMN_TYPE = \"$name\"", null)
+        if (cursor.moveToFirst()) {
+            do {
+                val oneDay = cursor.getString(cursor.getColumnIndex(INFORMATION))
+                allNotes += oneDay
+            } while (cursor.moveToNext())
+        }
+        deleteNote(date,name)
+        return allNotes
+    }
+
+    @SuppressLint("Range", "Recycle", "SimpleDateFormat")
     fun getProfessorSchedule(): List<Schedule> {
         val allSchedule: MutableList<Schedule> = LinkedList()
         val cursor = readableDatabase.rawQuery("SELECT * FROM $PROFESSOR_TABLE_NAME", null)
@@ -115,7 +148,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         return allSchedule
     }
 
-    @SuppressLint("Range", "Recycle")
+    @SuppressLint("Range", "Recycle", "SimpleDateFormat")
     fun getStudentSchedule(): List<Schedule> {
         val sdf = SimpleDateFormat("yyyy-MM-dd")
         val allSchedule: MutableList<Schedule> = LinkedList()
@@ -132,6 +165,12 @@ class Database(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         return allSchedule
     }
 
+
+    @SuppressLint("SimpleDateFormat")
+    private fun deleteNote(date: LocalDate, name: String){
+        val searchingDate: String = date.format(DATE_FORMATTER)
+        return writableDatabase.execSQL("DELETE FROM $NOTES_TABLE_NAME WHERE $COLUMN_DAY = \"$searchingDate\"  AND $COLUMN_TYPE = \"$name\"")
+    }
     fun deleteProfessorData() {
         //return writableDatabase.delete(PROFESSOR_TABLE_NAME, "$COLUMN_ID=?", arrayOf(id.toString()))
         return writableDatabase.execSQL("DELETE FROM $PROFESSOR_TABLE_NAME")

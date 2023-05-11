@@ -187,5 +187,34 @@
             tools:ignore="DuplicateClickableBoundsCheck"
             app:cornerRadius="60dp" />
 
+    <androidx.cardview.widget.CardView
+            android:layout_width="350dp"
+            android:layout_height="600dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:id="@+id/notecard"
+            app:cardCornerRadius="10dp"
+            android:visibility="invisible">
 
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="552dp"
+                    android:hint="Введите заметку..."
+                    android:id="@+id/note_text" />
+
+            <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/note_accept_button"
+                    android:text="Подтвердить" />
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

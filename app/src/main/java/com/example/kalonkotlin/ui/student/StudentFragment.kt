@@ -13,9 +13,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.cardview.widget.CardView
 
 import androidx.fragment.app.Fragment
 import com.example.kalonkotlin.MainActivity
@@ -72,14 +74,20 @@ class StudentFragment : Fragment(), View.OnClickListener {
     private lateinit var nowBtn: Button
     private lateinit var scheduleText: TextView
     private lateinit var weekdays: Array<String>
+    private lateinit var notecard: CardView
+    private lateinit var noteCardButton: Button
+    private lateinit var noteEditText: EditText
     private lateinit var db: Database
+    private var mainMenu: Menu? = null
+    private lateinit var noteButton: MenuItem
+    private lateinit var noteButtonr:Button
 
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
+        (activity as MainActivity?)
+            ?.setActionBarTitle(getString(R.string.title_student))
         if (id == R.id.item1) {
-            (activity as MainActivity?)
-                ?.setActionBarTitle(getString(R.string.title_student))
             chooseCourse.visibility = View.VISIBLE //блок насилия над элементами
             chooseFac.visibility = View.VISIBLE
             courseText.visibility = View.VISIBLE
@@ -105,14 +113,29 @@ class StudentFragment : Fragment(), View.OnClickListener {
             scheduleText.visibility = View.INVISIBLE
 
             return true
+        } else if (id == R.id.notes_btn) {
+            notecard.visibility = View.VISIBLE
+            val note = db.getNotes(date, clientGroup!!.name)
+            if (note.isNotEmpty()) {
+                    noteEditText.setText(note.toString())
+                }
+            noteCardButton.setOnClickListener {
+                val noteText = noteEditText.text
+                println(noteText)
+                db.insertNotes(date, clientGroup!!.name, noteText.toString())
+                //через append list
+                notecard.visibility = View.INVISIBLE
+            }
         }
         return super.onOptionsItemSelected(item)
-
     }
 
     @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.student, menu)
+        mainMenu = menu
+       // noteButton = mainMenu!!.getItem(R.id.notes_btn)
+         //noteButtonr = noteButton.actionView as Button
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -129,6 +152,9 @@ class StudentFragment : Fragment(), View.OnClickListener {
         setHasOptionsMenu(true)
         db = Database(context)
         weekdays = resources.getStringArray(R.array.weekdays)
+        notecard = binding.notecard
+        noteCardButton = binding.noteAcceptButton
+        noteEditText = binding.noteText
         chooseCourse = binding.courseNumber
         chooseFac = binding.facultyNumber
         chooseGroup = binding.group
@@ -212,9 +238,10 @@ class StudentFragment : Fragment(), View.OnClickListener {
 
 
     private fun searchByGroup() {
-        Logging.logTo(requireContext(), "professor $clientGroup")
+        Logging.logTo(requireContext(), "group $clientGroup")
         db.deleteStudentData()
         db.insertStudentData(clientGroup!!)
+      //  noteButtonr.visibility = View.VISIBLE
         //вывод в app bar выбранной группы
         (activity as MainActivity?)
             ?.setActionBarTitle(clientGroup!!.name)
@@ -318,13 +345,13 @@ $NO_PAIRS"""
     private fun savePref() {
         sPref = requireActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
         val ed = sPref.edit()
-        ed.putString(clientGroup.toString(), savedText)
+        ed.putString(savedText, clientGroup.toString())
         ed.apply()
     }
 
     private fun loadPref(): String? {
         sPref = requireActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
-        return sPref.getString(clientGroup.toString(), "")
+        return sPref.getString(savedText, "")
     }
 
     override fun onDestroyView() {
